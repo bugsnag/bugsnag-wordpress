@@ -21,14 +21,14 @@ How to Install
 
 ### Automatic Installation (Recommended)
 
-1.  Find the "Add New" page inside the "Plugins" section of your WordPress
+1.  Open the *Add New* page inside the *Plugins* section of your WordPress
     admin dashboard.
 
-2.  Search for "bugsnag" and click "Install".
+2.  Search for *bugsnag* and click *Install*.
 
-3.  Click "Activate" to activate the plugin.
+3.  Click *Activate* to activate the plugin.
 
-4.  Click "Configure" and enter your Bugsnag API Key from your
+4.  Click *Configure* and enter your Bugsnag API Key from your
     [Bugsnag Dashboard](https://bugsnag.com).
 
 
@@ -41,10 +41,10 @@ How to Install
 3.  Upload the `bugsnag` folder using ftp or scp to the `wp-content/plugins`
     folder of your WordPress site.
 
-4.  Click "Activate" on the "Bugsnag" plugin inside the "Plugins" section of
+4.  Click *Activate* on the *Bugsnag* plugin inside the *Plugins* section of
     your WordPress admin dashboard.
 
-5.  Click "Configure" and enter your Bugsnag API Key from your
+5.  Click *Configure* and enter your Bugsnag API Key from your
     [Bugsnag Dashboard](https://bugsnag.com).
 
 
@@ -53,10 +53,12 @@ Building from Source
 
 If you would like to build a new zip file of the plugin from source, you can
 run our build script using [Thor](http://whatisthor.com/). You'll need both
-`ruby` and the `thor` gem installed.
+`ruby` and the `thor` gem installed (`gem install thor`). Then you can
+generate a new zip by running:
 
--   `$ gem install thor`
--   `$ thor wordpress:zip bugsnag-wordpress.zip`
+```shell
+thor wordpress:zip bugsnag-wordpress.zip
+```
 
 
 Reporting Bugs or Feature Requests
