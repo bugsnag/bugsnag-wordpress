@@ -1,5 +1,5 @@
 class Wordpress < Thor
-  PLUGIN_FILES = %W{bugsnag.php readme.txt views}
+  PLUGIN_FILES = %W{bugsnag.php readme.txt views LICENSE.txt}
   BUILD_FILES = %W{build vendor composer.lock svn}
   VENDORED_BUGSNAG_PHP = "vendor/bugsnag/bugsnag/src/Bugsnag"
   VERSION_REGEX = /^\d+\.\d+\.\d+$/
@@ -28,8 +28,6 @@ class Wordpress < Thor
 
     replace_in_file("readme.txt", /Stable tag: 1.0.0/, "Stable tag: #{version}")
     replace_in_file("bugsnag.php", /Version: 1.0.0/, "Version: #{version}")
-
-    ["readme.txt", "bugsnag.php"]
   end
 
   desc "release_svn VERSION", "perform a release to svn"
