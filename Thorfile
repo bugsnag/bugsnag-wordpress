@@ -1,4 +1,7 @@
+require "fileutils"
+
 class Wordpress < Thor
+  PLUGIN_NAME = "bugsnag"
   PLUGIN_FILES = %W{bugsnag.php readme.txt views LICENSE.txt}
   BUILD_FILES = %W{build vendor composer.lock svn}
   VENDORED_BUGSNAG_PHP = "vendor/bugsnag/bugsnag/src/Bugsnag"
@@ -36,18 +39,21 @@ class Wordpress < Thor
     checkout_svn
 
     # Build a release copy into svn/trunk
-    build("svn/trunk")
+    build "svn/trunk"
 
     # Move into the svn repo
-    `cd svn`
+    Dir.chdir "svn" do
+      # Commit changes to svn
+      `svn add trunk/*`
+      `svn ci -m "Release version #{version}"`
 
-    # Commit changes to svn
-    `svn add trunk/*`
-    `svn ci -m "Release version #{version}"`
+      # Tag in svn
+      `svn cp trunk tags/#{version}`
+      `svn ci -m "Tagging version #{version}"`
+    end
 
-    # Tag in svn
-    `svn cp trunk tags/#{version}`
-    `svn ci -m "Tagging version #{version}"`
+    # Remove temporary files
+    FileUtils.rm_rf "svn"
   end
 
   desc "release_git VERSION", "perform a release to git"
@@ -68,6 +74,22 @@ class Wordpress < Thor
 
     # Release a new version via svn to wordpress.org/plugins
     release_svn(version)
+  end
+
+  desc "zip ZIP_NAME", "create a zip of the plugin"
+  def zip(zip_name="bugsnag-wordpress.zip", build_dir="build")
+    # Build a clean plugin
+    build File.join(build_dir, PLUGIN_NAME)
+
+    # Zip up the build
+    puts "- Generating #{zip_name}"
+    Dir.chdir build_dir do
+      `zip -r #{zip_name} #{PLUGIN_NAME}`
+      FileUtils.cp zip_name, "../"
+    end
+
+    # Remove temporary files
+    FileUtils.rm_rf build_dir
   end
 
   desc "clean", "clean up any build files"
