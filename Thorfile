@@ -32,16 +32,8 @@ class Wordpress < Thor
     ["readme.txt", "bugsnag.php"]
   end
 
-  desc "release VERSION", "perform a release to git and svn"
-  def release(version)
-    # Update version number
-    files_changed = update_version(version)
-
-    # TODO: Commit changes to git
-    `git add #{files_changed.join(" ")}`
-    `git ci -m "Release version #{version}"`
-    `git tag v#{version}`
-
+  desc "release_svn VERSION", "perform a release to svn"
+  def release_svn(version)
     # Checkout a fresh copy of the svn repo
     checkout_svn
 
@@ -58,6 +50,26 @@ class Wordpress < Thor
     # Tag in svn
     `svn cp trunk tags/#{version}`
     `svn ci -m "Tagging version #{version}"`
+  end
+
+  desc "release_git VERSION", "perform a release to git"
+  def release_git(version)
+    `git add readme.txt bugsnag.php`
+    `git ci -m "Release version #{version}"`
+    `git tag v#{version}`
+    `git push origin master && git push --tags`
+  end
+
+  desc "release VERSION", "perform a release to git and svn"
+  def release(version)
+    # Update version number
+    update_version(version)
+
+    # Release and tag in git
+    release_git(version)
+
+    # Release a new version via svn to wordpress.org/plugins
+    release_svn(version)
   end
 
   desc "clean", "clean up any build files"
