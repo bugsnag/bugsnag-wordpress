@@ -12,7 +12,7 @@ capturing errors from your applications.
 The Bugsnag Notifier for WordPress supports WordPress 2.0+, PHP 5.2+ and
 requires the cURL extension to be available in PHP.
 
-You can read more about the plugin or download it from the
+You can always read about the plugin or download it from the
 [WordPress Plugin Directory](http://wordpress.org/plugins/bugsnag/).
 
 
@@ -55,8 +55,8 @@ If you would like to build a new zip file of the plugin from source, you can
 run our build script using [Thor](http://whatisthor.com/). You'll need both
 `ruby` and the `thor` gem installed.
 
--   `gem install thor`
--   thor wordpress:zip bugsnag-wordpress.zip
+-   `$ gem install thor`
+-   `$ thor wordpress:zip bugsnag-wordpress.zip`
 
 
 Reporting Bugs or Feature Requests
