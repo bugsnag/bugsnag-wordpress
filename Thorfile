@@ -28,17 +28,22 @@ class Wordpress < Thor
 
     replace_in_file("readme.txt", /Stable tag: 1.0.0/, "Stable tag: #{version}")
     replace_in_file("bugsnag.php", /Version: 1.0.0/, "Version: #{version}")
+
+    ["readme.txt", "bugsnag.php"]
   end
 
   desc "release VERSION", "perform a release to git and svn"
   def release(version)
     # Update version number
-    update_version(version)
+    files_changed = update_version(version)
 
     # TODO: Commit changes to git
-    `git add readme.txt bugsnag.php`
+    `git add #{files_changed.join(" ")}`
     `git ci -m "Release version #{version}"`
     `git tag v#{version}`
+
+    # Checkout a fresh copy of the svn repo
+    checkout_svn
 
     # Build a release copy into svn/trunk
     build("svn/trunk")
