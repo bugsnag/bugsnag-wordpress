@@ -25,7 +25,7 @@ class Wordpress < Thor
     `cp -r #{VENDORED_BUGSNAG_PHP} #{build_dir}/bugsnag-php`
   end
 
-  desc "update_version VERSION", "update the plugin to the given version"
+  desc "update_version <version>", "update the plugin to the given version"
   def update_version(version)
     return $stderr.puts "Invalid version number #{version}" unless version =~ VERSION_REGEX
 
@@ -33,10 +33,10 @@ class Wordpress < Thor
     replace_in_file("bugsnag.php", /Version: 1.0.0/, "Version: #{version}")
   end
 
-  desc "release_svn VERSION", "perform a release to svn"
-  def release_svn(version)
+  desc "release_svn <version> <wordpress-username>", "perform a release to svn"
+  def release_svn(version, username)
     # Checkout a fresh copy of the svn repo
-    checkout_svn
+    checkout_svn(username)
 
     # Build a release copy into svn/trunk
     build "svn/trunk"
@@ -56,7 +56,7 @@ class Wordpress < Thor
     FileUtils.rm_rf "svn"
   end
 
-  desc "release_git VERSION", "perform a release to git"
+  desc "release_git <version>", "perform a release to git"
   def release_git(version)
     `git add readme.txt bugsnag.php`
     `git ci -m "Release version #{version}"`
@@ -64,8 +64,8 @@ class Wordpress < Thor
     `git push origin master && git push --tags`
   end
 
-  desc "release VERSION", "perform a release to git and svn"
-  def release(version)
+  desc "release <version> <wordpress-username>", "perform a release to git and svn"
+  def release(version, wordpress_username)
     # Update version number
     update_version(version)
 
@@ -73,10 +73,10 @@ class Wordpress < Thor
     release_git(version)
 
     # Release a new version via svn to wordpress.org/plugins
-    release_svn(version)
+    release_svn(version, wordpress_username)
   end
 
-  desc "zip ZIP_NAME", "create a zip of the plugin"
+  desc "zip <zip-name>", "create a zip of the plugin"
   def zip(zip_name="bugsnag-wordpress.zip", build_dir="build")
     # Build a clean plugin
     build File.join(build_dir, PLUGIN_NAME)
@@ -97,9 +97,9 @@ class Wordpress < Thor
     `rm -rf #{BUILD_FILES.join(" ")}`
   end
 
-  desc "checkout_svn", "checkout a copy of the svn repo"
-  def checkout_svn
-    `svn co http://plugins.svn.wordpress.org/bugsnag svn --username loopj`
+  desc "checkout_svn <wordpress-username>", "checkout a copy of the svn repo"
+  def checkout_svn(username)
+    `svn co http://plugins.svn.wordpress.org/bugsnag svn --username #{username}`
   end
 
   private
