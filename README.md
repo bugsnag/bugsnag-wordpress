@@ -24,7 +24,7 @@ How to Install
 1.  Open the *Add New* page inside the *Plugins* section of your WordPress
     admin dashboard.
 
-2.  Search for *bugsnag* and click *Install*.
+2.  Search for *bugsnag* and click *Install Now*.
 
 3.  Click *Activate* to activate the plugin.
 
