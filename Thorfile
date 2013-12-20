@@ -10,7 +10,7 @@ class Wordpress < Thor
   desc "build", "create a clean build of the plugin"
   def build(build_dir="build")
     # Prepare the build directory
-    `mkdir -p #{build_dir}`
+    FileUtils.mkdir_p build_dir
 
     # Install dependencies
     puts "- Installing dependencies"
@@ -18,11 +18,11 @@ class Wordpress < Thor
 
     # Copy plugin files to the build directory
     puts "- Copying plugin files"
-    `cp -r #{PLUGIN_FILES.join(" ")} #{build_dir}`
+    FileUtils.cp_r PLUGIN_FILES, build_dir
 
     # Copy vendored bugsnag to the build directory
     puts "- Copying vendored bugsnag-php"
-    `cp -r #{VENDORED_BUGSNAG_PHP} #{build_dir}/bugsnag-php`
+    FileUtils.cp_r VENDORED_BUGSNAG_PHP, "#{build_dir}/bugsnag-php"
   end
 
   desc "update_version <version>", "update the plugin to the given version"
@@ -58,9 +58,14 @@ class Wordpress < Thor
 
   desc "release_git <version>", "perform a release to git"
   def release_git(version)
+    # Commit version changes
     `git add readme.txt bugsnag.php`
     `git ci -m "Release version #{version}"`
+
+    # Tag release
     `git tag v#{version}`
+
+    # Push to git
     `git push origin master && git push --tags`
   end
 
@@ -94,7 +99,7 @@ class Wordpress < Thor
 
   desc "clean", "clean up any build files"
   def clean()
-    `rm -rf #{BUILD_FILES.join(" ")}`
+    FileUtils.rm_rf BUILD_FILES
   end
 
   desc "checkout_svn <wordpress-username>", "checkout a copy of the svn repo"
