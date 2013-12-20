@@ -26,7 +26,7 @@ How to Install
 
 2.  Search for *bugsnag* and click *Install Now*.
 
-3.  Click *Activate* to activate the plugin.
+3.  Click *Activate Plugin* to activate the plugin.
 
 4.  Click *Configure* and enter your Bugsnag API Key from your
     [Bugsnag Dashboard](https://bugsnag.com).
