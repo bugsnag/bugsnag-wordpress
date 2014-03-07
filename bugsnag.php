@@ -14,6 +14,12 @@ class Bugsnag_Wordpress
     private static $COMPOSER_AUTOLOADER = 'vendor/autoload.php';
     private static $PACKAGED_AUTOLOADER = 'bugsnag-php/Autoload.php';
 
+    private static $NOTIFIER = array(
+        'name' => 'Bugsnag Wordpress (Official)',
+        'version' => '1.1.0',
+        'url' => 'https://bugsnag.com/notifiers/wordpress'
+    );
+
     private $client;
     private $apiKey;
 
@@ -50,6 +56,8 @@ class Bugsnag_Wordpress
             if(defined('WP_ENV')) {
                 $this->client->setReleaseStage(WP_ENV);
             }
+
+            $this->client->setNotifier(self::$NOTIFIER);
 
             // Hook up automatic error handling
             set_error_handler(array($this->client, "errorHandler"));
