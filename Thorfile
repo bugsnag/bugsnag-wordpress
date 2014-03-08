@@ -22,7 +22,7 @@ class Wordpress < Thor
 
     # Copy vendored bugsnag to the build directory
     puts "- Copying vendored bugsnag-php"
-    FileUtils.cp_r VENDORED_BUGSNAG_PHP, "#{build_dir}/bugsnag-php"
+    `cp -r #{VENDORED_BUGSNAG_PHP}/* #{build_dir}/bugsnag-php`
   end
 
   desc "update_version <version>", "update the plugin to the given version"
