@@ -40,6 +40,7 @@ To manually install Bugsnag:
 
 = 1.1.0 =
 * Identify as wordpress notifier instead of PHP.
+* Allow configuration of error reporting levels.
 
 = 1.0.1 =
 * Fix bug where bugsnag-php library wasn't being included in zip file
