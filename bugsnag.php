@@ -13,6 +13,7 @@ class Bugsnag_Wordpress
 {
     private static $COMPOSER_AUTOLOADER = 'vendor/autoload.php';
     private static $PACKAGED_AUTOLOADER = 'bugsnag-php/Autoload.php';
+    private static $DEFAULT_NOTIFY_SEVERITIES = 'fatal,error';
 
     private static $NOTIFIER = array(
         'name' => 'Bugsnag Wordpress (Official)',
@@ -22,6 +23,7 @@ class Bugsnag_Wordpress
 
     private $client;
     private $apiKey;
+    private $notifySeverities;
 
     public function __construct()
     {
@@ -47,15 +49,16 @@ class Bugsnag_Wordpress
             return;
         }
 
-        // Activate the bugsnag client
+        // Load bugsnag settings
         $this->apiKey = get_option('bugsnag_api_key');
+        $this->notifySeverities = get_option('bugsnag_notify_severities');
+
+        // Activate the bugsnag client
         if(!empty($this->apiKey)) {
             $this->client = new Bugsnag_Client($this->apiKey);
 
-            // Set the releaseStage if a WordPress environment is set
-            if(defined('WP_ENV')) {
-                $this->client->setReleaseStage(WP_ENV);
-            }
+            $this->client->setReleaseStage($this->releaseStage())
+                         ->setErrorReportingLevel($this->errorReportingLevel());
 
             $this->client->setNotifier(self::$NOTIFIER);
 
@@ -68,6 +71,24 @@ class Bugsnag_Wordpress
     private function relativePath($path)
     {
         return dirname(__FILE__) . '/' . $path;
+    }
+
+    private function errorReportingLevel()
+    {
+        $notifySeverities = empty($this->notifySeverities) ? self::$DEFAULT_NOTIFY_SEVERITIES : $this->notifySeverities;
+        $level = 0;
+
+        $severities = explode(",", $notifySeverities);
+        foreach($severities as $severity) {
+            $level |= Bugsnag_ErrorTypes::getLevelsForSeverity($severity);
+        }
+
+        return $level;
+    }
+
+    private function releaseStage()
+    {
+        return defined('WP_ENV') ? WP_ENV : "production";
     }
 
 
@@ -122,6 +143,12 @@ class Bugsnag_Wordpress
     public function renderSettings()
     {
         include $this->relativePath('views/settings.php');
+    }
+
+    private function renderOption($name, $value, $current)
+    {
+        $selected = ($value == $current) ? " selected=\"selected\"" : "";
+        echo "<option value=\"$value\"$selected>$name</option>";
     }
 }
 
