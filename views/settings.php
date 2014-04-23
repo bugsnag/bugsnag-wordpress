@@ -59,6 +59,19 @@
           </select>
         </td>
       </tr>
+
+      <!-- Filter Fields -->
+      <tr valign="top">
+        <th>
+          <label for="bugsnag_filterfields">Bugsnag Field Filter</label>
+        </th>
+        <td>
+          <textarea id="bugsnag_filterfields" name="bugsnag_filterfields" class="regular-text filterfields"  style="width: 355px; height: 150px;"><?php echo get_option('bugsnag_filterfields'); ?></textarea>
+          <p class="description">
+            Please keep filtered fields comma seperated ex: username,password,email
+          </p>
+        </td>
+      </tr>
     </table>
 
     <p class="submit">
@@ -70,6 +83,6 @@
     <!-- Common form stuff -->
     <?php wp_nonce_field('update-options'); ?>
     <input type="hidden" name="action" value="update" />
-    <input type="hidden" name="page_options" value="bugsnag_api_key,bugsnag_notify_severities" />
+    <input type="hidden" name="page_options" value="bugsnag_api_key,bugsnag_notify_severities,bugsnag_filterfields" />
   </form>
 </div>

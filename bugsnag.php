@@ -24,6 +24,7 @@ class Bugsnag_Wordpress
     private $client;
     private $apiKey;
     private $notifySeverities;
+    private $filterFields;
 
     public function __construct()
     {
@@ -52,13 +53,15 @@ class Bugsnag_Wordpress
         // Load bugsnag settings
         $this->apiKey = get_option('bugsnag_api_key');
         $this->notifySeverities = get_option('bugsnag_notify_severities');
+        $this->filterFields = get_option('bugsnag_filterfields');
 
         // Activate the bugsnag client
         if(!empty($this->apiKey)) {
             $this->client = new Bugsnag_Client($this->apiKey);
 
             $this->client->setReleaseStage($this->releaseStage())
-                         ->setErrorReportingLevel($this->errorReportingLevel());
+                         ->setErrorReportingLevel($this->errorReportingLevel())
+                         ->setFilters($this->filterFields());
 
             $this->client->setNotifier(self::$NOTIFIER);
 
@@ -84,6 +87,11 @@ class Bugsnag_Wordpress
         }
 
         return $level;
+    }
+
+    private function filterFields()
+    {
+        return array_map('trim', explode(",", $this->filterFields));
     }
 
     private function releaseStage()
