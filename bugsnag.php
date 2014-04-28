@@ -36,6 +36,8 @@ class Bugsnag_Wordpress
 
         // Load admin actions (admin links and pages)
         add_action('admin_menu', array($this, 'adminMenuActions'));
+
+        add_action('wp_ajax_test_bugsnag', array($this, 'testBugsnag'));
     }
 
     private function activateBugsnag()
@@ -55,6 +57,10 @@ class Bugsnag_Wordpress
         $this->notifySeverities = get_option('bugsnag_notify_severities');
         $this->filterFields = get_option('bugsnag_filterfields');
 
+        $this->constructBugsnag();
+    }
+
+    private function constructBugsnag() {
         // Activate the bugsnag client
         if(!empty($this->apiKey)) {
             $this->client = new Bugsnag_Client($this->apiKey);
@@ -69,6 +75,7 @@ class Bugsnag_Wordpress
             set_error_handler(array($this->client, "errorHandler"));
             set_exception_handler(array($this->client, "exceptionHandler"));
         }
+
     }
 
     private function relativePath($path)
@@ -144,6 +151,19 @@ class Bugsnag_Wordpress
         }
 
         return $links;
+    }
+
+    public function testBugsnag()
+    {
+        $this->apiKey = $_POST["bugsnag_api_key"];
+        $this->notifySeverities = $_POST['bugsnag_notify_severities'];
+        $this->filterFields = $_POST['bugsnag_filterfields'];
+
+        $this->constructBugsnag();
+        $this->client->notifyError('BugsnagTest', 'Testing bugsnag',
+            array('notifier' => self::$NOTIFIER));
+
+        die();
     }
 
 

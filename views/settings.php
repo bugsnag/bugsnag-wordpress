@@ -77,6 +77,7 @@
 
     <p class="submit">
       <input type="submit" class="button-primary" value="<?php _e('Save Changes') ?>" />
+      <input type="submit" id="bugsnag-test" class="button-secondary" value="<?php _e('Test Bugsnag') ?>" />
     </p>
 
     <?php } ?>
@@ -87,3 +88,26 @@
     <input type="hidden" name="page_options" value="bugsnag_api_key,bugsnag_notify_severities,bugsnag_filterfields" />
   </form>
 </div>
+
+<script type="text/javascript" >
+jQuery(document).ready(function($) {
+
+    $('#bugsnag-test').click(function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+
+        var data = {
+            action: 'test_bugsnag',
+            bugsnag_api_key: $('#bugsnag_api_key').val(),
+            bugsnag_notify_severities: $('#bugsnag_notify_severities').val(),
+            bugsnag_filterfields: $('#bugsnag_filterfields').val()
+        };
+
+        // since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
+        $.post(ajaxurl, data, function(response) {
+            alert('Sent notification. Visit https://bugsnag.com/ to see it in your dashboard');
+        });
+
+    });
+});
+</script>
