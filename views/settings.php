@@ -67,8 +67,9 @@
         </th>
         <td>
           <textarea id="bugsnag_filterfields" name="bugsnag_filterfields" class="regular-text filterfields"  style="width: 355px; height: 150px;"><?php echo get_option('bugsnag_filterfields'); ?></textarea>
-          <p class="description">
-            Please keep filtered fields comma seperated ex: username,password,email
+          <p class="description" style="max-width: 400px">
+            The information to remove from Bugsnag reports, one per line. Use this if you want to ensure you don't send sensitive data such as passwords, and credit card numbers to our servers.
+
           </p>
         </td>
       </tr>

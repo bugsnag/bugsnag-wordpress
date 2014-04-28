@@ -91,7 +91,7 @@ class Bugsnag_Wordpress
 
     private function filterFields()
     {
-        return array_map('trim', explode(",", $this->filterFields));
+        return array_map('trim', explode("\n", $this->filterFields));
     }
 
     private function releaseStage()
