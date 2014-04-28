@@ -3,7 +3,7 @@ Contributors: loopj
 Tags: bugsnag, error, monitoring, exception, logging
 Requires at least: 2.0
 Tested up to: 3.8
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License: GPLv2 or later
 
 Bugsnag is a WordPress plugin that automatically detects errors & crashes on your WordPress site, and notifies you by email, chat or issues system
@@ -37,6 +37,10 @@ To manually install Bugsnag:
 
 
 == Changelog ==
+
+= 1.1.2 =
+* Allow configuration of filter fields.
+* Add a 'Test Bugsnag' button to the settings page.
 
 = 1.1.1 =
 * Identify as wordpress notifier instead of PHP.
