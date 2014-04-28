@@ -60,7 +60,7 @@ class Wordpress < Thor
   def release_git(version)
     # Commit version changes
     `git add readme.txt bugsnag.php`
-    `git ci -m "Release version #{version}"`
+    `git commit -m "Release version #{version}"`
 
     # Tag release
     `git tag v#{version}`
