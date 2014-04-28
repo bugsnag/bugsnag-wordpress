@@ -45,11 +45,11 @@ class Wordpress < Thor
     Dir.chdir "svn" do
       # Commit changes to svn
       `svn add trunk/*`
-      `svn ci -m "Release version #{version}"`
+      `svn ci -m "Release version #{version}" --username #{username}`
 
       # Tag in svn
       `svn cp trunk tags/#{version}`
-      `svn ci -m "Tagging version #{version}"`
+      `svn ci -m "Tagging version #{version}" --username #{username}`
     end
 
     # Remove temporary files
