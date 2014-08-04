@@ -9,8 +9,10 @@ class Wordpress < Thor
 
   desc "build", "create a clean build of the plugin"
   def build(build_dir="build")
+    bugsnag_php_dir = File.join(build_dir, 'bugsnag-php')
+
     # Prepare the build directory
-    FileUtils.mkdir_p build_dir
+    FileUtils.mkdir_p bugsnag_php_dir
 
     # Install dependencies
     puts "- Installing dependencies"
@@ -22,7 +24,7 @@ class Wordpress < Thor
 
     # Copy vendored bugsnag to the build directory
     puts "- Copying vendored bugsnag-php"
-    `cp -r #{VENDORED_BUGSNAG_PHP}/* #{build_dir}/bugsnag-php`
+    `cp -r #{VENDORED_BUGSNAG_PHP}/* #{bugsnag_php_dir}`
   end
 
   desc "update_version <version>", "update the plugin to the given version"
