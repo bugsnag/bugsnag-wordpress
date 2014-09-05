@@ -38,6 +38,9 @@ To manually install Bugsnag:
 
 == Changelog ==
 
+= 1.2.0 =
+* Update bugsnag-php to allow cURL or fopen.
+
 = 1.1.2 =
 * Allow configuration of filter fields.
 * Add a 'Test Bugsnag' button to the settings page.
