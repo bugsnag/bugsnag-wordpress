@@ -17,7 +17,7 @@ class Bugsnag_Wordpress
 
     private static $NOTIFIER = array(
         'name' => 'Bugsnag Wordpress (Official)',
-        'version' => '1.1.2',
+        'version' => '1.2.1',
         'url' => 'https://bugsnag.com/notifiers/wordpress'
     );
 
