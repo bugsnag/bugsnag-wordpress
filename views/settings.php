@@ -8,7 +8,11 @@
     Errors are sent to your <a href="https://bugsnag.com">Bugsnag Dashboard</a> for you to view and debug, and we'll also notify you by email, chat, sms or create a ticket in your issue tracking system if you use one. We'll also show you exactly how many times each error occurred, and how many users were impacted by each crash.
   </p>
 
-  <form method="post" action="options.php"> 
+  <?php if (function_exists('is_plugin_active_for_network') && is_plugin_active_for_network($this->pluginBase)) { ?>
+  <form method='post'>
+  <?php } else { ?>
+  <form method="post" action="options.php">
+  <?php } ?>
     <?php if(empty($this->apiKey)) { ?>
 
     <!-- API Key Prompt -->
@@ -38,7 +42,7 @@
           <label for="bugsnag_api_key">Bugsnag API Key</label>
         </th>
         <td>
-          <input type="text" id="bugsnag_api_key" name="bugsnag_api_key" value="<?php echo get_option('bugsnag_api_key'); ?>" class="regular-text code" /><br>
+          <input type="text" id="bugsnag_api_key" name="bugsnag_api_key" value="<?php echo $this->apiKey ?>" class="regular-text code" /><br>
 
           <p class="description">
             You can find your API Key on your <a href="https://bugsnag.com">Bugsnag Dashboard</a>.
@@ -66,7 +70,7 @@
           <label for="bugsnag_filterfields">Bugsnag Field Filter</label>
         </th>
         <td>
-          <textarea id="bugsnag_filterfields" name="bugsnag_filterfields" class="regular-text filterfields"  style="width: 355px; height: 150px;"><?php echo get_option('bugsnag_filterfields'); ?></textarea>
+          <textarea id="bugsnag_filterfields" name="bugsnag_filterfields" class="regular-text filterfields"  style="width: 355px; height: 150px;"><?php echo $this->filterFields; ?></textarea>
           <p class="description" style="max-width: 400px">
             The information to remove from Bugsnag reports, one per line. Use this if you want to ensure you don't send sensitive data such as passwords, and credit card numbers to our servers.
 
