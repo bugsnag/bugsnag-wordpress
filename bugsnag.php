@@ -3,7 +3,7 @@
 Plugin Name: Bugsnag Error Monitoring
 Plugin URI: https://bugsnag.com
 Description: Bugsnag monitors for errors and crashes on your wordpress site, sends them to your bugsnag.com dashboard, and notifies you by email of each error.
-Version: 1.1.2
+Version: 1.2.1
 Author: Bugsnag Inc.
 Author URI: https://bugsnag.com
 License: GPLv2 or later
@@ -17,7 +17,7 @@ class Bugsnag_Wordpress
 
     private static $NOTIFIER = array(
         'name' => 'Bugsnag Wordpress (Official)',
-        'version' => '1.1.2',
+        'version' => '1.2.1',
         'url' => 'https://bugsnag.com/notifiers/wordpress'
     );
 
@@ -25,17 +25,23 @@ class Bugsnag_Wordpress
     private $apiKey;
     private $notifySeverities;
     private $filterFields;
+    private $pluginBase;
 
     public function __construct()
     {
         // Activate bugsnag error monitoring as soon as possible
         $this->activateBugsnag();
 
+        $this->pluginBase = 'bugsnag/bugsnag.php';
+
         // Run init actions (loading wp user)
         add_action('init', array($this, 'initActions'));
 
         // Load admin actions (admin links and pages)
         add_action('admin_menu', array($this, 'adminMenuActions'));
+
+        // Load network admin menu if using multisite
+        add_action('network_admin_menu', array($this, 'networkAdminMenuActions'));
 
         add_action('wp_ajax_test_bugsnag', array($this, 'testBugsnag'));
     }
@@ -53,9 +59,17 @@ class Bugsnag_Wordpress
         }
 
         // Load bugsnag settings
-        $this->apiKey = get_option('bugsnag_api_key');
-        $this->notifySeverities = get_option('bugsnag_notify_severities');
-        $this->filterFields = get_option('bugsnag_filterfields');
+        if ( ! get_site_option('bugsnag_network')) {
+            // Regular
+            $this->apiKey           = get_option( 'bugsnag_api_key' );
+            $this->notifySeverities = get_option( 'bugsnag_notify_severities' );
+            $this->filterFields     = get_option( 'bugsnag_filterfields' );
+        } else {
+            // Multisite
+            $this->apiKey           = get_site_option( 'bugsnag_api_key' );
+            $this->notifySeverities = get_site_option( 'bugsnag_notify_severities' );
+            $this->filterFields     = get_site_option( 'bugsnag_filterfields' );
+        }
 
         $this->constructBugsnag();
     }
@@ -133,11 +147,37 @@ class Bugsnag_Wordpress
 
     public function adminMenuActions()
     {
-        // Add the "settings" link to the Bugsnag row of plugins.php
-        add_filter('plugin_action_links', array($this, 'pluginActionLinksFilter'), 10, 2);
+        if ( ! function_exists( 'is_plugin_active_for_network' ) || ! is_plugin_active_for_network($this->pluginBase)) {
+            // Add the "settings" link to the Bugsnag row of plugins.php
+            add_filter('plugin_action_links', array($this, 'pluginActionLinksFilter'), 10, 2);
 
-        // Create the settings page
-        add_options_page('Bugsnag Settings', 'Bugsnag', 'manage_options', 'bugsnag', array($this, 'renderSettings'));
+            // Create the settings page
+            add_options_page('Bugsnag Settings', 'Bugsnag', 'manage_options', 'bugsnag', array($this, 'renderSettings'));
+        }
+    }
+
+    public function networkAdminMenuActions()
+    {
+        if (function_exists('is_plugin_active_for_network') && is_plugin_active_for_network($this->pluginBase)) {
+            // Create the network settings page
+            add_submenu_page('settings.php', 'Bugsnag Settings', 'Bugsnag', 'manage_network_options', 'bugsnag', array($this, 'renderSettings'));
+        }
+    }
+
+    private function updateNetworkSettings( $settings )
+    {
+        // Update options
+        update_site_option('bugsnag_api_key', isset($_POST['bugsnag_api_key']) ? $_POST['bugsnag_api_key'] : '');
+        update_site_option('bugsnag_notify_severities', isset($_POST['bugsnag_notify_severities']) ? $_POST['bugsnag_notify_severities'] : '');
+        update_site_option('bugsnag_filterfields', isset($_POST['bugsnag_filterfields']) ? $_POST['bugsnag_filterfields'] : '');
+        update_site_option('bugsnag_network', true);
+
+        // Update variables
+        $this->apiKey           = get_site_option( 'bugsnag_api_key' );
+        $this->notifySeverities = get_site_option( 'bugsnag_notify_severities' );
+        $this->filterFields     = get_site_option( 'bugsnag_filterfields' );
+
+        echo '<div class="updated"><p>Settings saved.</p></div>';
     }
 
 
@@ -170,6 +210,10 @@ class Bugsnag_Wordpress
     // Renderers
     public function renderSettings()
     {
+        if ( ! empty($_POST[ 'action' ]) && $_POST[ 'action' ] == 'update') {
+            $this->updateNetworkSettings( $_POST );
+        }
+
         include $this->relativePath('views/settings.php');
     }
 
