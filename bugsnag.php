@@ -222,6 +222,23 @@ class Bugsnag_Wordpress
         $selected = ($value == $current) ? " selected=\"selected\"" : "";
         echo "<option value=\"$value\"$selected>$name</option>";
     }
+
+    /**
+     * Fluent interface to $this->client, simply call the methods on this object and this will proxy them through.
+     *
+     * @param $method
+     * @param $arguments
+     *
+     * @return mixed
+     */
+    public function __call($method, $arguments)
+    {
+        if (method_exists($this->client, $method)) {
+            return call_user_func_array(array($this->client, $method), $arguments);
+        }
+
+        throw new BadMethodCallException(sprintf('Method %s does not exist on %s or Bugsnag_Client', $method, __CLASS__ ));
+    }
 }
 
 $bugsnagWordpress = new Bugsnag_Wordpress();
