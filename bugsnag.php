@@ -53,7 +53,7 @@ class Bugsnag_Wordpress
             require_once $this->relativePath(self::$COMPOSER_AUTOLOADER);
         } elseif (file_exists($this->relativePath(self::$PACKAGED_AUTOLOADER))) {
             require_once $this->relativePath(self::$PACKAGED_AUTOLOADER);
-        } else {
+        } elseif (!class_exists('Bugsnag_Client')){
             error_log("Bugsnag Error: Couldn't activate Bugsnag Error Monitoring due to missing Bugsnag library!");
             return;
         }
