@@ -48,18 +48,14 @@ class Bugsnag_Wordpress
 
     private function activateBugsnag()
     {
-        // Require bugsnag-php
-        if(file_exists($this->relativePath(self::$COMPOSER_AUTOLOADER))) {
-            require_once $this->relativePath(self::$COMPOSER_AUTOLOADER);
-        } elseif (file_exists($this->relativePath(self::$PACKAGED_AUTOLOADER))) {
-            require_once $this->relativePath(self::$PACKAGED_AUTOLOADER);
-        } elseif (!class_exists('Bugsnag_Client')){
+        $is_load_success = $this->requireBugsnagPhp();
+        if (!$is_load_success) {
             error_log("Bugsnag Error: Couldn't activate Bugsnag Error Monitoring due to missing Bugsnag library!");
             return;
         }
 
         // Load bugsnag settings
-        if ( ! get_site_option('bugsnag_network')) {
+        if (!get_site_option('bugsnag_network')) {
             // Regular
             $this->apiKey           = get_option( 'bugsnag_api_key' );
             $this->notifySeverities = get_option( 'bugsnag_notify_severities' );
@@ -85,11 +81,44 @@ class Bugsnag_Wordpress
 
             $this->client->setNotifier(self::$NOTIFIER);
 
-            // Hook up automatic error handling
-            set_error_handler(array($this->client, "errorHandler"));
-            set_exception_handler(array($this->client, "exceptionHandler"));
+            // If handlers are not set, errors are still going to be reported
+            // to bugsnag, difference is execution will not stop.
+            //
+            // Can be useful to see inline errors and traces with xdebug too.
+            $set_error_and_exception_handlers = apply_filters('bugsnag_set_error_and_exception_handlers', true);
+            if ($set_error_and_exception_handlers === true) {
+                // Hook up automatic error handling
+                set_error_handler(array($this->client, "errorHandler"));
+                set_exception_handler(array($this->client, "exceptionHandler"));
+            }
         }
 
+    }
+
+    private function requireBugsnagPhp()
+    {
+        // Bugsnag-php was already loaded by some 3rd-party code, don't need to load it again.
+        if (class_exists('Bugsnag_Client')) {
+            return true;
+        }
+
+        // Try loading bugsnag-php with composer autoloader.
+        $composer_autoloader_path = $this->relativePath(self::$COMPOSER_AUTOLOADER);
+        $composer_autoloader_path_filtered = apply_filters('bugsnag_composer_autoloader_path', $composer_autoloader_path);
+        if (file_exists($composer_autoloader_path_filtered)) {
+            require_once $composer_autoloader_path_filtered;
+            return true;
+        }
+
+        // Try loading bugsnag-php from packaged autoloader.
+        $packaged_autoloader_path = $this->relativePath(self::$PACKAGED_AUTOLOADER);
+        $packaged_autoloader_path_filtered = apply_filters('bugsnag_packaged_autoloader_path', $packaged_autoloader_path);
+        if (file_exists($packaged_autoloader_path_filtered)) {
+            require_once $packaged_autoloader_path_filtered;
+            return true;
+        }
+
+        return false;
     }
 
     private function relativePath($path)
@@ -112,37 +141,78 @@ class Bugsnag_Wordpress
 
     private function filterFields()
     {
-        return array_map('trim', explode("\n", $this->filterFields));
+        $filter_fields = apply_filters('bugsnag_filter_fields', $this->filterFields);
+
+        // Array with empty string will break things.
+        if ($filter_fields === '') {
+            return array();
+        }
+
+        return array_map('trim', explode("\n", $filter_fields));
     }
 
     private function releaseStage()
     {
-        return defined('WP_ENV') ? WP_ENV : "production";
+        $release_stage = defined('WP_ENV') ? WP_ENV : "production";
+        $release_stage_filtered = apply_filters('bugsnag_release_stage', $release_stage);
+        return $release_stage_filtered;
     }
 
 
     // Action hooks
     public function initActions()
     {
-        // Set the bugsnag user using the current WordPress user if available
-        $wpUser = wp_get_current_user();
-        if(!empty($this->client) && !empty($wpUser)) {
-            $user = array();
-
-            if(!empty($wpUser->user_login)) {
-                $user['id'] = $wpUser->user_login;
-            }
-
-            if(!empty($wpUser->user_email)) {
-                $user['email'] = $wpUser->user_email;
-            }
-
-            if(!empty($wpUser->user_display_name)) {
-                $user['name'] = $wpUser->user_display_name;
-            }
-
-            $this->client->setUser($user);
+        // This should be handled on stage of initializing,
+        // not even adding action if init failed.
+        //
+        // Leaving it here for now.
+        if(empty($this->client)) {
+            return;
         }
+
+
+        // Set the bugsnag user using the current WordPress user if available,
+        // set as anonymous otherwise.
+        $user = array();
+        if (is_user_logged_in()) {
+            $wp_user = wp_get_current_user();
+
+            // Removed checks for !empty($wp_user->display_name), it should not be required.
+            $user['id'] = $wp_user->user_login;
+            $user['email'] = $wp_user->user_email;
+            $user['name'] = $wp_user->display_name;
+        }
+        else {
+            $use_unsafe_spoofable_ip_address_getter = apply_filters('bugsnag_use_unsafe_spoofable_ip_address_getter', true);
+            $user['id'] = $use_unsafe_spoofable_ip_address_getter ?
+                $this->getClientIpAddressUnsafe() :
+                $this->getClientIpAddress();
+            $user['name'] = 'anonymous';
+        }
+
+        $this->client->setUser($user);
+    }
+
+    // Unsafe: client can spoof address.
+    // http://stackoverflow.com/questions/1634782/what-is-the-most-accurate-way-to-retrieve-a-users-correct-ip-address-in-php
+    private function getClientIpAddressUnsafe()
+    {
+        foreach (array('HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR') as $key){
+            if (array_key_exists($key, $_SERVER) === true) {
+                foreach (explode(',', $_SERVER[$key]) as $ip) {
+                    $ip = trim($ip);
+                    if (filter_var($ip, FILTER_VALIDATE_IP) !== false) {
+                        return $ip;
+                    }
+                }
+            }
+        }
+    }
+
+    // Can not be spoofed, but can show ip of NAT or proxies.
+    private function getClientIpAddress()
+    {
+        return $_SERVER['REMOTE_ADDR'];
     }
 
     public function adminMenuActions()
