@@ -296,8 +296,8 @@ class Bugsnag_Wordpress
     /**
      * Fluent interface to $this->client, simply call the methods on this object and this will proxy them through.
      *
-     * @param $method
-     * @param $arguments
+     * @param string $method
+     * @param array  $arguments
      *
      * @return mixed
      */
