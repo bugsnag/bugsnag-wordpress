@@ -19,22 +19,7 @@ You can always read about the plugin or download it from the
 How to Install
 --------------
 
-### Automatic Installation (Recommended)
-
-1.  Open the *Add New* page inside the *Plugins* section of your WordPress
-    admin dashboard.
-
-2.  Search for *bugsnag* and click *Install Now*.
-
-3.  Click *Activate Plugin* to activate the plugin.
-
-4.  Click *Configure* and enter your Bugsnag API Key from your
-    [Bugsnag Dashboard](https://bugsnag.com).
-
-
-### Manual Installation
-
-1.  Download the latest [bugsnag.zip](http://downloads.wordpress.org/plugin/bugsnag.zip).
+1.  Download the latest [bugsnag.zip](https://github.com/bugsnag/bugsnag-wordpress/releases/latest).
 
 2.  Unzip `bugsnag.zip`.
 
