@@ -91,6 +91,8 @@ class Bugsnag_Wordpress
                 set_error_handler(array($this->client, "errorHandler"));
                 set_exception_handler(array($this->client, "exceptionHandler"));
             }
+            
+            do_action('bugsnag_constructed', $this);
         }
 
     }
