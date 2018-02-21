@@ -4,10 +4,10 @@ Bugsnag Notifier for WordPress
 The Bugsnag Notifier for WordPress gives you instant notification of errors 
 in your WordPress sites.
 
-[Bugsnag](https://bugsnag.com) captures errors in real-time from your web, 
+[Bugsnag](https://www.bugsnag.com/) captures errors in real-time from your web, 
 mobile and desktop applications, helping you to understand and resolve them 
-as fast as possible. [Create a free account](https://bugsnag.com) to start 
-capturing errors from your applications.
+as fast as possible. Create a free account to start 
+capturing errors from your applications. Learn more about [error monitoring and error reporting](https://www.bugsnag.com/) with Bugsnag.
 
 The Bugsnag Notifier for WordPress supports WordPress 2.0+, PHP 5.2+ and
 requires the cURL extension to be available in PHP.
