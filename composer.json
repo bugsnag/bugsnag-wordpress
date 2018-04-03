@@ -11,5 +11,8 @@
             "name": "James Smith",
             "email": "james@loopj.com"
         }
-    ]
+    ],
+    "require-dev": {
+        "stevegrunwell/wp-enforcer": "^0.5.0"
+    }
 }
