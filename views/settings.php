@@ -1,5 +1,4 @@
 <div class="wrap">
-  <?php screen_icon(); ?>
   <h2>Bugsnag Settings</h2>
   <p>
     Bugsnag automatically detects errors &amp; crashes on your WordPress site, plugins &amp; themes.
