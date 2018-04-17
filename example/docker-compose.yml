@@ -1,0 +1,21 @@
+version: '3.4'
+services:
+  db:
+    image: mysql
+    environment:
+      - MYSQL_DATABASE=wordpress
+      - MYSQL_USER=wp_admin
+      - MYSQL_PASSWORD
+      - MYSQL_ROOT_PASSWORD
+    restart: "no"
+  app:
+    image: wordpress
+    environment:
+      - WORDPRESS_DB_USER=wp_admin
+      - WORDPRESS_DB_PASSWORD=$MYSQL_PASSWORD
+    links:
+    - db:mysql
+    ports:
+    - 8080:80
+    volumes:
+    - ./app/:/var/www/html
