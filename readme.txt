@@ -38,6 +38,9 @@ To manually install Bugsnag:
 
 == Changelog ==
 
+= 1.3.1 =
+* Remove deprecated screen_icon function from settings page
+
 = 1.3.0 =
 * Fix version constraints
 * General fixes for WP 4.5 compatibility
