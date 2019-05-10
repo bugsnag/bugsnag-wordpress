@@ -10,7 +10,7 @@
   <?php if (function_exists('is_plugin_active_for_network') && is_plugin_active_for_network($this->pluginBase)) { ?>
   <form method='post'>
   <?php } else { ?>
-  <form method="post" action="options.php">
+  <form method="post">
   <?php } ?>
     <?php if(empty($this->apiKey)) { ?>
 
