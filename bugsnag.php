@@ -311,4 +311,5 @@ class Bugsnag_Wordpress
     }
 }
 
+global $bugsnagWordpress; // make variable reachable when plugin is used as mu-plugin
 $bugsnagWordpress = new Bugsnag_Wordpress();
