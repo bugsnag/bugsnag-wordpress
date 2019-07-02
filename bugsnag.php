@@ -325,4 +325,5 @@ function bugsnag_define_api_key()
 add_filter('pre_option_bugsnag_api_key', 'bugsnag_define_api_key');
 add_filter('pre_site_option_bugsnag_api_key', 'bugsnag_define_api_key');
 
+global $bugsnagWordpress;
 $bugsnagWordpress = new Bugsnag_Wordpress();
