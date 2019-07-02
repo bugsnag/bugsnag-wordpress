@@ -2,7 +2,7 @@
     "name": "bugsnag/bugsnag-wordpress",
     "type": "wordpress-plugin",
     "require": {
-        "bugsnag/bugsnag": "^2.2",
+        "bugsnag/bugsnag": "^2.10",
         "composer/installers": "^1.0"
     },
     "license": "MIT",

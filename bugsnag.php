@@ -79,6 +79,8 @@ class Bugsnag_Wordpress
                          ->setErrorReportingLevel($this->errorReportingLevel())
                          ->setFilters($this->filterFields());
 
+            $this->client->mergeDeviceData(['runtimeVersions' => ['wordpress' => get_bloginfo('version')]]);
+
             $this->client->setNotifier(self::$NOTIFIER);
 
             // If handlers are not set, errors are still going to be reported
