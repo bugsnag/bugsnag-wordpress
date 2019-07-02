@@ -4,7 +4,7 @@
     Bugsnag automatically detects errors &amp; crashes on your WordPress site, plugins &amp; themes.
   </p>
   <p>
-    Errors are sent to your <a href="https://bugsnag.com">Bugsnag Dashboard</a> for you to view and debug, and we'll also notify you by email, chat, sms or create a ticket in your issue tracking system if you use one. We'll also show you exactly how many times each error occurred, and how many users were impacted by each crash.
+    Errors are sent to your <a href="https://app.bugsnag.com">Bugsnag Dashboard</a> for you to view and debug, and we'll also notify you by email, chat, sms or create a ticket in your issue tracking system if you use one. We'll also show you exactly how many times each error occurred, and how many users were impacted by each crash.
   </p>
 
   <?php if (function_exists('is_plugin_active_for_network') && is_plugin_active_for_network($this->pluginBase)) { ?>
@@ -19,7 +19,7 @@
       <h3>Please configure your Bugsnag API Key to enable this plugin</h3>
 
       <p>
-        Sign up for a <a href="https://bugsnag.com/user/sign_up">Bugsnag Account</a> and create a project with type <i>WordPress</i>,<br>
+        Sign up for a <a href="https://app.bugsnag.com/user/new">Bugsnag Account</a> and create a project with type <i>WordPress</i>,<br>
         you'll then be shown your API Key, which you should paste here:
       </p>
 
@@ -44,7 +44,7 @@
           <input type="text" id="bugsnag_api_key" name="bugsnag_api_key" value="<?php echo $this->apiKey ?>" class="regular-text code" /><br>
 
           <p class="description">
-            You can find your API Key on your <a href="https://bugsnag.com">Bugsnag Dashboard</a>.
+            You can find your API Key on your <a href="https://app.bugsnag.com">Bugsnag Dashboard</a>.
           </p>
         </td>
       </tr>
@@ -108,7 +108,7 @@ jQuery(document).ready(function($) {
 
         // since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
         $.post(ajaxurl, data, function(response) {
-            alert('Sent notification. Visit https://bugsnag.com/ to see it in your dashboard');
+            alert('Sent notification. Visit https://app.bugsnag.com/ to see it in your dashboard');
         });
 
     });
