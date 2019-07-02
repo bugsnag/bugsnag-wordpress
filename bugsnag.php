@@ -313,9 +313,14 @@ class Bugsnag_Wordpress
     }
 }
 
-// Add ability to define Bugsnag API Key as constant in wp-config.php
-function bugsnag_define_api_key() {
-  return defined('BUGSNAG_API_KEY') ? BUGSNAG_API_KEY : false;
+/**
+ * Add ability to define Bugsnag API Key as constant in wp-config.php
+ * 
+ * @return either the API from wp-config or false (to use the option value)
+ */ 
+function bugsnag_define_api_key()
+{
+    return defined('BUGSNAG_API_KEY') ? BUGSNAG_API_KEY : false;
 }
 add_filter('pre_option_bugsnag_api_key', 'bugsnag_define_api_key');
 add_filter('pre_site_option_bugsnag_api_key', 'bugsnag_define_api_key');
