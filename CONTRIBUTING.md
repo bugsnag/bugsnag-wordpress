@@ -20,7 +20,7 @@ thor wordpress:zip bugsnag-wordpress.zip
 
 ## Releasing
 
-1. Update the version number and changelog in `readme.txt`
+1. Update the version number and changelog in `readme.txt` and `bugsnag.php`
 2. Commit, tag, and push the new version as `vX.X.X`
 3. [Build the release from source](#building-from-source)
 4. Attach the release zip to the GitHub releases page for the new tag
