@@ -83,16 +83,6 @@ class Bugsnag_Wordpress
 
             $this->client->setNotifier(self::$NOTIFIER);
 
-            // If handlers are not set, errors are still going to be reported
-            // to bugsnag, difference is execution will not stop.
-            //
-            // Can be useful to see inline errors and traces with xdebug too.
-            $set_error_and_exception_handlers = apply_filters('bugsnag_set_error_and_exception_handlers', true);
-            if ($set_error_and_exception_handlers === true) {
-                // Hook up automatic error handling
-                set_error_handler(array($this->client, "errorHandler"));
-                set_exception_handler(array($this->client, "exceptionHandler"));
-            }
         }
 
     }
@@ -193,6 +183,19 @@ class Bugsnag_Wordpress
         }
 
         $this->client->setUser($user);
+
+        if(!empty($this->apiKey)) {
+            // If handlers are not set, errors are still going to be reported
+            // to bugsnag, difference is execution will not stop.
+            //
+            // Can be useful to see inline errors and traces with xdebug too.
+            $set_error_and_exception_handlers = apply_filters('bugsnag_set_error_and_exception_handlers', true);
+            if ($set_error_and_exception_handlers === true) {
+                // Hook up automatic error handling
+                set_error_handler(array($this->client, "errorHandler"));
+                set_exception_handler(array($this->client, "exceptionHandler"));
+            }
+        }
     }
 
     // Unsafe: client can spoof address.
