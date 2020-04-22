@@ -12,7 +12,7 @@
   <?php } else { ?>
   <form method="post">
   <?php } ?>
-    <?php if(empty($this->apiKey)) { ?>
+    <?php if (empty($this->apiKey)) { ?>
 
     <!-- API Key Prompt -->
     <div style="max-width: 560px; border: 1px solid #e6db55; padding: 0 10px 12px; background: #fffbcc">
@@ -56,9 +56,9 @@
         </th>
         <td>
           <select name="bugsnag_notify_severities" id="bugsnag_notify_severities">
-            <?php $this->renderOption("Crashes &amp; errors", "fatal,error", $this->notifySeverities); ?>
-            <?php $this->renderOption("Crashes, errors &amp; warnings", "fatal,error,warning", $this->notifySeverities); ?>
-            <?php $this->renderOption("Crashes, errors, warnings &amp; info messages", "fatal,error,warning,info", $this->notifySeverities); ?>
+            <?php $this->renderOption('Crashes &amp; errors', 'fatal,error', $this->notifySeverities); ?>
+            <?php $this->renderOption('Crashes, errors &amp; warnings', 'fatal,error,warning', $this->notifySeverities); ?>
+            <?php $this->renderOption('Crashes, errors, warnings &amp; info messages', 'fatal,error,warning,info', $this->notifySeverities); ?>
           </select>
         </td>
       </tr>
