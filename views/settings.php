@@ -10,7 +10,7 @@
     </p>
 
     <form method="post">
-        <?php if (empty($this->apiKey)) : ?>
+        <?php if (empty($this->apiKey)) { ?>
             <!-- API Key Prompt -->
             <div style="max-width: 560px; border: 1px solid #e6db55; padding: 0 10px 12px; background: #fffbcc">
                 <h3>Please configure your Bugsnag API Key to enable this plugin</h3>
@@ -27,7 +27,7 @@
 
                 <div style="clear: both"></div>
             </div>
-        <?php else: ?>
+        <?php } else { ?>
             <!-- Full Settings Form -->
             <table class="form-table">
                 <!-- API Key -->
@@ -75,7 +75,7 @@
             <div class="submit">
                 <input type="submit" class="button-primary" value="<?php _e('Save Changes') ?>" />
             </div>
-        <?php endif ?>
+        <?php } ?>
 
         <!-- Common form stuff -->
         <?php wp_nonce_field('update-options'); ?>
@@ -84,7 +84,7 @@
     </form>
 </div>
 
-<?php if (!empty($this->apiKey)): ?>
+<?php if (!empty($this->apiKey)) { ?>
     <div>
         <h2>Test your connection to Bugsnag</h2>
 
@@ -96,7 +96,7 @@
             <?php _e('Test Bugsnag Connection') ?>
         </button>
     </div>
-<?php endif ?>
+<?php } ?>
 
 <script type="text/javascript" >
 jQuery(document).ready(function($) {
