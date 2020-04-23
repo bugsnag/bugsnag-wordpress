@@ -5,6 +5,12 @@ Changelog
 
 ### Enhancements
 
+* Clarify the "Test Bugsnag" form action [#46](https://github.com/bugsnag/bugsnag-wordpress/pull/46)
+
+## 1.4.0
+
+### Enhancements
+
 * Add WordPress version string to report payloads (device.runtimeVersions) [#39](https://github.com/bugsnag/bugsnag-wordpress/pull/39)
 
 ### Fixes
