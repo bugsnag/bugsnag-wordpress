@@ -308,6 +308,14 @@ class Bugsnag_Wordpress
      */
     public function __call($method, $arguments)
     {
+        // If we don't have an API key here then the plugin has not been setup, but
+        // methods are already being called. We can't forward these calls through
+        // because the client needs an API key on construction and we need to fail
+        // loudly so the user knows their site isn't setup correctly.
+        if (empty($this->apiKey)) {
+            throw new BadMethodCallException('No Bugsnag API Key set');
+        }
+
         if (method_exists($this->client, $method)) {
             return call_user_func_array(array($this->client, $method), $arguments);
         }
