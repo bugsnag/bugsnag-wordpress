@@ -313,7 +313,9 @@ class Bugsnag_Wordpress
         // because the client needs an API key on construction and we need to fail
         // loudly so the user knows their site isn't setup correctly.
         if (empty($this->apiKey)) {
-            throw new BadMethodCallException('No Bugsnag API Key set');
+            throw new BadMethodCallException(
+                'No Bugsnag API Key set. Please enter your API Key on the Bugsnag Settings page.'
+            );
         }
 
         if (method_exists($this->client, $method)) {
