@@ -89,7 +89,10 @@ class Bugsnag_Wordpress
             // to bugsnag, difference is execution will not stop.
             //
             // Can be useful to see inline errors and traces with xdebug too.
-            $set_error_and_exception_handlers = apply_filters('bugsnag_set_error_and_exception_handlers', true);
+            $set_error_and_exception_handlers = apply_filters(
+                'bugsnag_set_error_and_exception_handlers',
+                defined('BUGSNAG_SET_EXCEPTION_HANDLERS') ? BUGSNAG_SET_EXCEPTION_HANDLERS : true
+            );
 
             if ($set_error_and_exception_handlers === true) {
                 // Hook up automatic error handling
