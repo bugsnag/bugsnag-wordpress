@@ -27,5 +27,7 @@ In order to make a release your WordPress account must have committer access on 
     ```
     $ thor wordpress:release <version> <wordpress-username>
     ```
+
+    Where `<version>` is the version number you're updating to with no leading 'v' (e.g. use "1.6.0" rather than "v1.6.0") and `<wordpress-username>` is your [WordPress.org](https://wordpress.org) account username
 1. [Build the release from source](#building-from-source)
 1. Attach the release zip to the GitHub releases page for the new tag
