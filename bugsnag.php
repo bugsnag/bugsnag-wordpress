@@ -18,7 +18,7 @@ class Bugsnag_Wordpress
     private static $NOTIFIER = array(
         'name' => 'Bugsnag Wordpress (Official)',
         'version' => '1.3.1',
-        'url' => 'https://bugsnag.com/notifiers/wordpress'
+        'url' => 'https://bugsnag.com/notifiers/wordpress',
     );
 
     private $client;
@@ -51,28 +51,30 @@ class Bugsnag_Wordpress
         $is_load_success = $this->requireBugsnagPhp();
         if (!$is_load_success) {
             error_log("Bugsnag Error: Couldn't activate Bugsnag Error Monitoring due to missing Bugsnag library!");
+
             return;
         }
 
         // Load bugsnag settings
         if (!get_site_option('bugsnag_network')) {
             // Regular
-            $this->apiKey           = get_option( 'bugsnag_api_key' );
-            $this->notifySeverities = get_option( 'bugsnag_notify_severities' );
-            $this->filterFields     = get_option( 'bugsnag_filterfields' );
+            $this->apiKey = get_option('bugsnag_api_key');
+            $this->notifySeverities = get_option('bugsnag_notify_severities');
+            $this->filterFields = get_option('bugsnag_filterfields');
         } else {
             // Multisite
-            $this->apiKey           = get_site_option( 'bugsnag_api_key' );
-            $this->notifySeverities = get_site_option( 'bugsnag_notify_severities' );
-            $this->filterFields     = get_site_option( 'bugsnag_filterfields' );
+            $this->apiKey = get_site_option('bugsnag_api_key');
+            $this->notifySeverities = get_site_option('bugsnag_notify_severities');
+            $this->filterFields = get_site_option('bugsnag_filterfields');
         }
 
         $this->constructBugsnag();
     }
 
-    private function constructBugsnag() {
+    private function constructBugsnag()
+    {
         // Activate the bugsnag client
-        if(!empty($this->apiKey)) {
+        if (!empty($this->apiKey)) {
             $this->client = new Bugsnag_Client($this->apiKey);
 
             $this->client->setReleaseStage($this->releaseStage())
@@ -87,14 +89,17 @@ class Bugsnag_Wordpress
             // to bugsnag, difference is execution will not stop.
             //
             // Can be useful to see inline errors and traces with xdebug too.
-            $set_error_and_exception_handlers = apply_filters('bugsnag_set_error_and_exception_handlers', true);
+            $set_error_and_exception_handlers = apply_filters(
+                'bugsnag_set_error_and_exception_handlers',
+                defined('BUGSNAG_SET_EXCEPTION_HANDLERS') ? BUGSNAG_SET_EXCEPTION_HANDLERS : true
+            );
+
             if ($set_error_and_exception_handlers === true) {
                 // Hook up automatic error handling
-                set_error_handler(array($this->client, "errorHandler"));
-                set_exception_handler(array($this->client, "exceptionHandler"));
+                set_error_handler(array($this->client, 'errorHandler'));
+                set_exception_handler(array($this->client, 'exceptionHandler'));
             }
         }
-
     }
 
     private function requireBugsnagPhp()
@@ -109,6 +114,7 @@ class Bugsnag_Wordpress
         $composer_autoloader_path_filtered = apply_filters('bugsnag_composer_autoloader_path', $composer_autoloader_path);
         if (file_exists($composer_autoloader_path_filtered)) {
             require_once $composer_autoloader_path_filtered;
+
             return true;
         }
 
@@ -117,6 +123,7 @@ class Bugsnag_Wordpress
         $packaged_autoloader_path_filtered = apply_filters('bugsnag_packaged_autoloader_path', $packaged_autoloader_path);
         if (file_exists($packaged_autoloader_path_filtered)) {
             require_once $packaged_autoloader_path_filtered;
+
             return true;
         }
 
@@ -125,7 +132,7 @@ class Bugsnag_Wordpress
 
     private function relativePath($path)
     {
-        return dirname(__FILE__) . '/' . $path;
+        return dirname(__FILE__).'/'.$path;
     }
 
     private function errorReportingLevel()
@@ -133,8 +140,8 @@ class Bugsnag_Wordpress
         $notifySeverities = empty($this->notifySeverities) ? self::$DEFAULT_NOTIFY_SEVERITIES : $this->notifySeverities;
         $level = 0;
 
-        $severities = explode(",", $notifySeverities);
-        foreach($severities as $severity) {
+        $severities = explode(',', $notifySeverities);
+        foreach ($severities as $severity) {
             $level |= Bugsnag_ErrorTypes::getLevelsForSeverity($severity);
         }
 
@@ -155,11 +162,11 @@ class Bugsnag_Wordpress
 
     private function releaseStage()
     {
-        $release_stage = defined('WP_ENV') ? WP_ENV : "production";
+        $release_stage = defined('WP_ENV') ? WP_ENV : 'production';
         $release_stage_filtered = apply_filters('bugsnag_release_stage', $release_stage);
+
         return $release_stage_filtered;
     }
-
 
     // Action hooks
     public function initActions()
@@ -168,10 +175,9 @@ class Bugsnag_Wordpress
         // not even adding action if init failed.
         //
         // Leaving it here for now.
-        if(empty($this->client)) {
+        if (empty($this->client)) {
             return;
         }
-
 
         // Set the bugsnag user using the current WordPress user if available,
         // set as anonymous otherwise.
@@ -183,8 +189,7 @@ class Bugsnag_Wordpress
             $user['id'] = $wp_user->user_login;
             $user['email'] = $wp_user->user_email;
             $user['name'] = $wp_user->display_name;
-        }
-        else {
+        } else {
             $use_unsafe_spoofable_ip_address_getter = apply_filters('bugsnag_use_unsafe_spoofable_ip_address_getter', true);
             $user['id'] = $use_unsafe_spoofable_ip_address_getter ?
                 $this->getClientIpAddressUnsafe() :
@@ -199,7 +204,7 @@ class Bugsnag_Wordpress
     // http://stackoverflow.com/questions/1634782/what-is-the-most-accurate-way-to-retrieve-a-users-correct-ip-address-in-php
     private function getClientIpAddressUnsafe()
     {
-        foreach (array('HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR') as $key){
+        foreach (array('HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR') as $key) {
             if (array_key_exists($key, $_SERVER) === true) {
                 foreach (explode(',', $_SERVER[$key]) as $ip) {
                     $ip = trim($ip);
@@ -219,7 +224,7 @@ class Bugsnag_Wordpress
 
     public function adminMenuActions()
     {
-        if ( ! function_exists( 'is_plugin_active_for_network' ) || ! is_plugin_active_for_network($this->pluginBase)) {
+        if (!function_exists('is_plugin_active_for_network') || !is_plugin_active_for_network($this->pluginBase)) {
             // Add the "settings" link to the Bugsnag row of plugins.php
             add_filter('plugin_action_links', array($this, 'pluginActionLinksFilter'), 10, 2);
 
@@ -236,7 +241,7 @@ class Bugsnag_Wordpress
         }
     }
 
-    private function updateNetworkSettings( $settings )
+    private function updateNetworkSettings($settings)
     {
         // Update options
         update_site_option('bugsnag_api_key', isset($_POST['bugsnag_api_key']) ? $_POST['bugsnag_api_key'] : '');
@@ -245,19 +250,18 @@ class Bugsnag_Wordpress
         update_site_option('bugsnag_network', true);
 
         // Update variables
-        $this->apiKey           = get_site_option( 'bugsnag_api_key' );
-        $this->notifySeverities = get_site_option( 'bugsnag_notify_severities' );
-        $this->filterFields     = get_site_option( 'bugsnag_filterfields' );
+        $this->apiKey = get_site_option('bugsnag_api_key');
+        $this->notifySeverities = get_site_option('bugsnag_notify_severities');
+        $this->filterFields = get_site_option('bugsnag_filterfields');
 
         echo '<div class="updated"><p>Settings saved.</p></div>';
     }
-
 
     // Filter hooks
     public function pluginActionLinksFilter($links, $file)
     {
         // Add the "settings" link to the Bugsnag plugin row
-        if(basename($file) == basename(__FILE__)) {
+        if (basename($file) == basename(__FILE__)) {
             $settings_link = '<a href="options-general.php?page=bugsnag">Settings</a>';
             array_push($links, $settings_link);
         }
@@ -267,23 +271,25 @@ class Bugsnag_Wordpress
 
     public function testBugsnag()
     {
-        $this->apiKey = $_POST["bugsnag_api_key"];
+        $this->apiKey = $_POST['bugsnag_api_key'];
         $this->notifySeverities = $_POST['bugsnag_notify_severities'];
         $this->filterFields = $_POST['bugsnag_filterfields'];
 
         $this->constructBugsnag();
-        $this->client->notifyError('BugsnagTest', 'Testing bugsnag',
-            array('notifier' => self::$NOTIFIER));
+        $this->client->notifyError(
+            'BugsnagTest',
+            'Testing bugsnag',
+            array('notifier' => self::$NOTIFIER)
+        );
 
         die();
     }
 
-
     // Renderers
     public function renderSettings()
     {
-        if ( ! empty($_POST[ 'action' ]) && $_POST[ 'action' ] == 'update') {
-            $this->updateNetworkSettings( $_POST );
+        if (!empty($_POST['action']) && $_POST['action'] == 'update') {
+            $this->updateNetworkSettings($_POST);
         }
 
         include $this->relativePath('views/settings.php');
@@ -291,7 +297,7 @@ class Bugsnag_Wordpress
 
     private function renderOption($name, $value, $current)
     {
-        $selected = ($value == $current) ? " selected=\"selected\"" : "";
+        $selected = ($value == $current) ? ' selected="selected"' : '';
         echo "<option value=\"$value\"$selected>$name</option>";
     }
 
@@ -305,19 +311,29 @@ class Bugsnag_Wordpress
      */
     public function __call($method, $arguments)
     {
+        // If we don't have an API key here then the plugin has not been setup, but
+        // methods are already being called. We can't forward these calls through
+        // because the client needs an API key on construction and we need to fail
+        // loudly so the user knows their site isn't setup correctly.
+        if (empty($this->apiKey)) {
+            throw new BadMethodCallException(
+                'No Bugsnag API Key set. Please enter your API Key on the Bugsnag Settings page.'
+            );
+        }
+
         if (method_exists($this->client, $method)) {
             return call_user_func_array(array($this->client, $method), $arguments);
         }
 
-        throw new BadMethodCallException(sprintf('Method %s does not exist on %s or Bugsnag_Client', $method, __CLASS__ ));
+        throw new BadMethodCallException(sprintf('Method %s does not exist on %s or Bugsnag_Client', $method, __CLASS__));
     }
 }
 
 /**
- * Add ability to define Bugsnag API Key as constant in wp-config.php
- * 
+ * Add ability to define Bugsnag API Key as constant in wp-config.php.
+ *
  * @return either the API from wp-config or false (to use the option value)
- */ 
+ */
 function bugsnag_define_api_key()
 {
     return defined('BUGSNAG_API_KEY') ? BUGSNAG_API_KEY : false;
