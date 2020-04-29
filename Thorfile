@@ -31,8 +31,9 @@ class Wordpress < Thor
   def update_version(version)
     return $stderr.puts "Invalid version number #{version}" unless version =~ VERSION_REGEX
 
-    replace_in_file("readme.txt", /Stable tag: 1.0.0/, "Stable tag: #{version}")
-    replace_in_file("bugsnag.php", /Version: 1.0.0/, "Version: #{version}")
+    replace_in_file("readme.txt", /Stable tag: \d\.\d\.\d/, "Stable tag: #{version}")
+    replace_in_file("bugsnag.php", /Version: \d\.\d\.\d/, "Version: #{version}")
+    replace_in_file("bugsnag.php", /'version' => '\d\.\d\.\d'/, "'version' => '#{version}'")
   end
 
   desc "release_svn <version> <wordpress-username>", "perform a release to svn"
