@@ -3,6 +3,7 @@ disabled:
   - phpdoc_align
   - no_blank_lines_after_throw
   - short_array_syntax
+  - die_to_exit
 
 enabled:
   - unalign_double_arrow
