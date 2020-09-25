@@ -160,10 +160,18 @@ class Bugsnag_Wordpress
         return array_map('trim', explode("\n", $filter_fields));
     }
 
+    /**
+     * Set Release Stage.
+     * @return $release_stage_filtered Release Stage Filtered.
+     */
     private function releaseStage()
     {
-        $release_stage = defined('WP_ENV') ? WP_ENV : 'production';
-        $release_stage_filtered = apply_filters('bugsnag_release_stage', $release_stage);
+        if( function_exists( 'wp_get_environment_type' ) ) {
+          $release_stage =  wp_get_environment_type(); // Defaults to production when not set.
+        } else {
+          $release_stage = defined( 'WP_ENV' ) ? WP_ENV : 'production';
+        }
+        $release_stage_filtered = apply_filters( 'bugsnag_release_stage', $release_stage );
 
         return $release_stage_filtered;
     }
