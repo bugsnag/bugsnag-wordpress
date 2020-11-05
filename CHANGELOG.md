@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## TBD
+
+### Enhancements
+
+* Use `wp_get_environment_type` to set the release stage, when it's available [bhubbard](https://github.com/bhubbard) [#53](https://github.com/bugsnag/bugsnag-wordpress/pull/53)
+
 ## 1.5.0 (2020-04-29)
 
 ### Enhancements
