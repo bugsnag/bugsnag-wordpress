@@ -1,11 +1,12 @@
 Changelog
 =========
 
-## TBD
+## v1.6.0 (2020-11-17)
 
 ### Enhancements
 
 * Use `wp_get_environment_type` to set the release stage, when it's available [bhubbard](https://github.com/bhubbard) [#53](https://github.com/bugsnag/bugsnag-wordpress/pull/53)
+* Update bundled bugsnag-php version to v2.10.1
 
 ## 1.5.0 (2020-04-29)
 
