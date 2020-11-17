@@ -38,6 +38,10 @@ To manually install Bugsnag:
 
 == Changelog ==
 
+= 1.6.0 =
+* Add support for setting the release stage using the new "wp_get_environment_type" function
+* Update bugsnag-php to v2.10.1
+
 = 1.5.0 =
 * Clarify the "Test Bugsnag" form action
 * Improve error message when methods are called with no api key set
