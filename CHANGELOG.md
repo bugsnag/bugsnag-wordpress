@@ -1,6 +1,10 @@
 Changelog
 =========
 
+## v1.6.1 (2021-09-21)
+
+* Bump "tested up to" WordPress version
+
 ## v1.6.0 (2020-11-17)
 
 ### Enhancements
