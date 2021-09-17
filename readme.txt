@@ -2,7 +2,7 @@
 Contributors: loopj
 Tags: bugsnag, error, monitoring, exception, logging
 Requires at least: 2.0
-Tested up to: 5.5.3
+Tested up to: 5.8.1
 Stable tag: 1.6.0
 License: GPLv2 or later
 
