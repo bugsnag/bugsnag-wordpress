@@ -38,6 +38,9 @@ To manually install Bugsnag:
 
 == Changelog ==
 
+= 1.6.1
+* Bump "tested up to" WordPress version
+
 = 1.6.0 =
 * Add support for setting the release stage using the new "wp_get_environment_type" function
 * Update bugsnag-php to v2.10.1
