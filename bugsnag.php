@@ -289,7 +289,7 @@ class Bugsnag_Wordpress
             'BugsnagTest',
             'Testing bugsnag',
             array('notifier' => self::$NOTIFIER,
-                  'docs' => array('url' => "https://docs.bugsnag.com/platforms/php/wordpress/"))
+                'docs' => array('url' => "https://docs.bugsnag.com/platforms/php/wordpress/"))
         );
 
         die();
