@@ -288,7 +288,8 @@ class Bugsnag_Wordpress
         $this->client->notifyError(
             'BugsnagTest',
             'Testing bugsnag',
-            array('notifier' => self::$NOTIFIER)
+            array('notifier' => self::$NOTIFIER,
+                  'docs' => array('url' => "https://docs.bugsnag.com/platforms/php/wordpress/"))
         );
 
         die();

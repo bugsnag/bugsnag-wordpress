@@ -1,6 +1,10 @@
 Changelog
 =========
 
+## TBD (TBD)
+
+* Fix broken url in notifier configuration & add docs link to test notification [#60](https://github.com/bugsnag/bugsnag-wordpress/pull/60)
+
 ## v1.6.1 (2021-09-21)
 
 * Bump "tested up to" WordPress version
