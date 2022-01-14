@@ -38,6 +38,9 @@ To manually install Bugsnag:
 
 == Changelog ==
 
+= TBD
+* Fix broken url in notifier configuration & add docs link to test notification.
+
 = 1.6.1
 * Bump "tested up to" WordPress version
 
