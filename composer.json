@@ -11,5 +11,10 @@
             "name": "James Smith",
             "email": "james@loopj.com"
         }
-    ]
+    ],
+    "config": {
+        "allow-plugins": {
+            "composer/installers": true
+        }
+    }
 }

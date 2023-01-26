@@ -18,7 +18,7 @@ class Bugsnag_Wordpress
     private static $NOTIFIER = array(
         'name' => 'Bugsnag Wordpress (Official)',
         'version' => '1.6.1',
-        'url' => 'https://bugsnag.com/notifiers/wordpress',
+        'url' => 'https://github.com/bugsnag/bugsnag-wordpress',
     );
 
     private $client;
@@ -288,7 +288,10 @@ class Bugsnag_Wordpress
         $this->client->notifyError(
             'BugsnagTest',
             'Testing bugsnag',
-            array('notifier' => self::$NOTIFIER)
+            array(
+                'notifier' => self::$NOTIFIER,
+                'docs' => array('url' => 'https://docs.bugsnag.com/platforms/php/wordpress/'),
+            )
         );
 
         die();
