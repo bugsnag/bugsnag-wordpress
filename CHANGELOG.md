@@ -1,6 +1,10 @@
 Changelog
 =========
 
+## v1.6.3 (2023-07-13)
+
+* Fix PHP 8.2 deprecation notice
+
 ## v1.6.2 (2023-01-26)
 
 * Fix broken url in notifier configuration & add docs link to test notification [#60](https://github.com/bugsnag/bugsnag-wordpress/pull/60)
