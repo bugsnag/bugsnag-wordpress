@@ -310,9 +310,6 @@ class Bugsnag_Wordpress
             if (!wp_verify_nonce($_POST['_wpnonce'], 'update-options')) {
                 wp_die('Security check failed. Please try again.');
             }
-        }
-
-        if (!empty($_POST['action']) && $_POST['action'] == 'update') {
             $this->updateNetworkSettings($_POST);
         }
 
