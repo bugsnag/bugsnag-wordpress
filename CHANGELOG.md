@@ -1,6 +1,10 @@
 Changelog
 =========
 
+## v1.7.0 (2025-09-15)
+
+* Fix CVE-2025-58806
+
 ## v1.6.3 (2023-07-13)
 
 * Fix PHP 8.2 deprecation notice
