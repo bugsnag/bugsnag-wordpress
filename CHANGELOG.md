@@ -1,9 +1,9 @@
 Changelog
 =========
 
-## v1.7.0 (2025-09-15)
+## v1.6.4 (2025-09-15)
 
-* Fix CVE-2025-58806
+* Patch CVE-2025-58806 [#66](https://github.com/bugsnag/bugsnag-wordpress/pull/66)
 
 ## v1.6.3 (2023-07-13)
 
