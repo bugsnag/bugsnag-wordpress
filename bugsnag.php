@@ -3,7 +3,7 @@
 Plugin Name: Bugsnag Error Monitoring
 Plugin URI: https://bugsnag.com
 Description: Bugsnag monitors for errors and crashes on your wordpress site, sends them to your bugsnag.com dashboard, and notifies you by email of each error.
-Version: 1.6.3
+Version: 1.6.4
 Author: Bugsnag Inc.
 Author URI: https://bugsnag.com
 License: GPLv2 or later
@@ -17,7 +17,7 @@ class Bugsnag_Wordpress
 
     private static $NOTIFIER = array(
         'name' => 'Bugsnag Wordpress (Official)',
-        'version' => '1.6.3',
+        'version' => '1.6.4',
         'url' => 'https://github.com/bugsnag/bugsnag-wordpress',
     );
 
@@ -280,6 +280,11 @@ class Bugsnag_Wordpress
 
     public function testBugsnag()
     {
+        // Verify nonce for CSRF protection
+        if (!wp_verify_nonce($_POST['_wpnonce'], 'test_bugsnag_nonce')) {
+            wp_die('Security check failed.');
+        }
+
         $this->apiKey = $_POST['bugsnag_api_key'];
         $this->notifySeverities = $_POST['bugsnag_notify_severities'];
         $this->filterFields = $_POST['bugsnag_filterfields'];
@@ -301,6 +306,10 @@ class Bugsnag_Wordpress
     public function renderSettings()
     {
         if (!empty($_POST['action']) && $_POST['action'] == 'update') {
+            // Verify nonce for CSRF protection
+            if (!wp_verify_nonce($_POST['_wpnonce'], 'update-options')) {
+                wp_die('Security check failed. Please try again.');
+            }
             $this->updateNetworkSettings($_POST);
         }
 

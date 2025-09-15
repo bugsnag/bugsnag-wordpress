@@ -108,7 +108,8 @@ jQuery(document).ready(function($) {
             action: 'test_bugsnag',
             bugsnag_api_key: $('#bugsnag_api_key').val(),
             bugsnag_notify_severities: $('#bugsnag_notify_severities').val(),
-            bugsnag_filterfields: $('#bugsnag_filterfields').val()
+            bugsnag_filterfields: $('#bugsnag_filterfields').val(),
+            _wpnonce: '<?php echo wp_create_nonce('test_bugsnag_nonce'); ?>'
         };
 
         // since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php

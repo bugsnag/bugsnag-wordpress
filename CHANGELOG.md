@@ -1,6 +1,10 @@
 Changelog
 =========
 
+## v1.6.4 (2025-09-15)
+
+* Patch CVE-2025-58806 [#66](https://github.com/bugsnag/bugsnag-wordpress/pull/66)
+
 ## v1.6.3 (2023-07-13)
 
 * Fix PHP 8.2 deprecation notice
