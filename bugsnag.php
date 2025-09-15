@@ -280,6 +280,11 @@ class Bugsnag_Wordpress
 
     public function testBugsnag()
     {
+        // Verify nonce for CSRF protection
+        if (!wp_verify_nonce($_POST['_wpnonce'], 'test_bugsnag_nonce')) {
+            wp_die('Security check failed.');
+        }
+
         $this->apiKey = $_POST['bugsnag_api_key'];
         $this->notifySeverities = $_POST['bugsnag_notify_severities'];
         $this->filterFields = $_POST['bugsnag_filterfields'];
@@ -300,6 +305,13 @@ class Bugsnag_Wordpress
     // Renderers
     public function renderSettings()
     {
+        if (!empty($_POST['action']) && $_POST['action'] == 'update') {
+            // Verify nonce for CSRF protection
+            if (!wp_verify_nonce($_POST['_wpnonce'], 'update-options')) {
+                wp_die('Security check failed. Please try again.');
+            }
+        }
+
         if (!empty($_POST['action']) && $_POST['action'] == 'update') {
             $this->updateNetworkSettings($_POST);
         }
