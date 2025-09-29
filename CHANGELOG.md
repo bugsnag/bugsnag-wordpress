@@ -1,6 +1,10 @@
 Changelog
 =========
 
+## v1.6.5 (2025-09-30)
+
+* Update plugin metadata [#66](https://github.com/bugsnag/bugsnag-wordpress/pull/67)
+
 ## v1.6.4 (2025-09-15)
 
 * Patch CVE-2025-58806 [#66](https://github.com/bugsnag/bugsnag-wordpress/pull/66)

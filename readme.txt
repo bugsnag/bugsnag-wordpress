@@ -1,4 +1,4 @@
-=== WordPress Error Monitoring by Bugsnag ===
+=== BugSnag Error Monitoring plugin ===
 Contributors: loopj
 Tags: bugsnag, error, monitoring, exception, logging
 Requires at least: 2.0
@@ -6,21 +6,20 @@ Tested up to: 6.8.2
 Stable tag: 1.6.4
 License: GPLv2 or later
 
-Bugsnag is a WordPress plugin that automatically detects errors & crashes on your WordPress site, and notifies you by email, chat or issues system
-
+Automatically detects errors & crashes on your WordPress site using BugSnag to notify you by email, chat or issues system.
 
 == Description ==
 
-Bugsnag is a WordPress plugin that automatically detects errors & crashes on your WordPress site, and notifies you by email, chat or ticket system.
+Automatically detects errors & crashes on your WordPress site using BugSnag to notify you by email, chat or issues system.
 
-All websites crash from time to time, including WordPress sites! The *WordPress Error Monitoring* plugin by Bugsnag automatically detects crashes, exceptions and other errors in your WordPress PHP code as well as any errors in plugins you are using.
+All websites crash from time to time, including WordPress sites! Th BugSnag Error Reporting plugin automatically detects crashes, exceptions and other errors in your WordPress PHP code as well as any errors in plugins you are using.
 
-Errors are sent to your [Bugsnag Dashboard](https://bugsnag.com) for you to view and debug, and we'll also notify you by email, chat, sms or create a ticket in your issue tracking system if you use one. We'll also show you exactly how many times each error occurred, and how many users were impacted by each crash.
+Errors are sent to your [BugSnag Dashboard](https://bugsnag.com) for you to view and debug, and we'll also notify you by email, chat, sms or create a ticket in your issue tracking system if you use one. We'll also show you exactly how many times each error occurred, and how many users were impacted by each crash.
 
 
 == Installation ==
 
-Bugsnag is available through the [WordPress Plugins Directory](http://wordpress.org/plugins/), so you can download and install automatically from the Plugins menu on your WordPress admin page.
+BugSnag is available through the [WordPress Plugins Directory](http://wordpress.org/plugins/), so you can download and install automatically from the Plugins menu on your WordPress admin page.
 
 To manually install Bugsnag:
 
@@ -32,11 +31,14 @@ To manually install Bugsnag:
 
 == Screenshots ==
 
-1. Bugsnag dashboard list of errors
-2. Bugsnag dashboard error details
+1. BugSnag dashboard list of errors
+2. BugSnag dashboard error details
 
 
 == Changelog ==
+
+= 1.6.5 =
+* Update plugin metadata
 
 = 1.6.4 =
 * Patch CVE-2025-58806

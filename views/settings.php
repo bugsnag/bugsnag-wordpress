@@ -1,22 +1,22 @@
 <div class="wrap">
-    <h2>Bugsnag Settings</h2>
+    <h2>BugSnag Settings</h2>
 
     <p>
-        Bugsnag automatically detects errors &amp; crashes on your WordPress site, plugins &amp; themes.
+        BugSnag automatically detects errors &amp; crashes on your WordPress site, plugins &amp; themes.
     </p>
 
     <p>
-        Errors are sent to your <a href="https://app.bugsnag.com">Bugsnag Dashboard</a> for you to view and debug, and we'll also notify you by email, chat, sms or create a ticket in your issue tracking system if you use one. We'll also show you exactly how many times each error occurred, and how many users were impacted by each crash.
+        Errors are sent to your <a href="https://app.bugsnag.com">BugSnag Dashboard</a> for you to view and debug, and we'll also notify you by email, chat, sms or create a ticket in your issue tracking system if you use one. We'll also show you exactly how many times each error occurred, and how many users were impacted by each crash.
     </p>
 
     <form method="post">
         <?php if (empty($this->apiKey)) { ?>
             <!-- API Key Prompt -->
             <div style="max-width: 560px; border: 1px solid #e6db55; padding: 0 10px 12px; background: #fffbcc">
-                <h3>Please configure your Bugsnag API Key to enable this plugin</h3>
+                <h3>Please configure your BugSnag API Key to enable this plugin</h3>
 
                 <p>
-                    Sign up for a <a href="https://app.bugsnag.com/user/new">Bugsnag Account</a> and create a project with type <i>WordPress</i>,<br>
+                    Sign up for a <a href="https://app.bugsnag.com/user/new">BugSnag Account</a> and create a project with type <i>WordPress</i>,<br>
                     you'll then be shown your API Key, which you should paste here:
                 </p>
 
@@ -33,20 +33,20 @@
                 <!-- API Key -->
                 <tr valign="top">
                     <th scope="row">
-                        <label for="bugsnag_api_key">Bugsnag API Key</label>
+                        <label for="bugsnag_api_key">BugSnag API Key</label>
                     </th>
                     <td>
                         <input type="text" id="bugsnag_api_key" name="bugsnag_api_key" value="<?php echo $this->apiKey ?>" class="regular-text code" /><br>
 
                         <p class="description">
-                            You can find your API Key on your <a href="https://app.bugsnag.com">Bugsnag Dashboard</a>.
+                            You can find your API Key on your <a href="https://app.bugsnag.com">BugSnag Dashboard</a>.
                         </p>
                     </td>
                 </tr>
 
                 <tr valign="top">
                     <th>
-                      <label for="bugsnag_notify_severities">Notify Bugsnag About</label>
+                      <label for="bugsnag_notify_severities">Notify BugSnag About</label>
                     </th>
                     <td>
                         <select name="bugsnag_notify_severities" id="bugsnag_notify_severities">
@@ -60,12 +60,12 @@
                 <!-- Filter Fields -->
                 <tr valign="top">
                     <th>
-                      <label for="bugsnag_filterfields">Bugsnag Field Filter</label>
+                      <label for="bugsnag_filterfields">BugSnag Field Filter</label>
                     </th>
                     <td>
                         <textarea id="bugsnag_filterfields" name="bugsnag_filterfields" class="regular-text filterfields"  style="height: 150px;"><?php echo $this->filterFields; ?></textarea>
                         <p class="description">
-                            The information to remove from Bugsnag reports, one per line.
+                            The information to remove from BugSnag reports, one per line.
                             Use this if you want to ensure you don't send sensitive data such as passwords, and credit card numbers to our servers.
                         </p>
                     </td>
@@ -86,14 +86,14 @@
 
 <?php if (!empty($this->apiKey)) { ?>
     <div>
-        <h2>Test your connection to Bugsnag</h2>
+        <h2>Test your connection to BugSnag</h2>
 
-        <p>Use this button to send a test event that can be viewed in <a href="https://app.bugsnag.com">your Bugsnag Dashboard</a>.</p>
+        <p>Use this button to send a test event that can be viewed in <a href="https://app.bugsnag.com">your BugSnag Dashboard</a>.</p>
 
         <p>Note - any <a href="https://docs.bugsnag.com/platforms/php/wordpress/configuration-options/">configuration options</a> applied in code will not be applied to this test event.</p>
 
         <button id="bugsnag-test" class="button-secondary">
-            <?php _e('Test Bugsnag Connection') ?>
+            <?php _e('Test BugSnag Connection') ?>
         </button>
     </div>
 <?php } ?>
