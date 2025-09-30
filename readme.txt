@@ -3,7 +3,7 @@ Contributors: loopj
 Tags: bugsnag, error, monitoring, exception, logging
 Requires at least: 2.0
 Tested up to: 6.8.2
-Stable tag: 1.6.4
+Stable tag: 1.6.5
 License: GPLv2 or later
 
 Automatically detects errors & crashes on your WordPress site using BugSnag to notify you by email, chat or issues system.
