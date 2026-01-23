@@ -1,51 +1,50 @@
-require "fileutils"
+require 'fileutils'
 
 class Wordpress < Thor
-  PLUGIN_NAME = "bugsnag"
-  PLUGIN_FILES = %W{bugsnag.php readme.txt views LICENSE.txt}
-  BUILD_FILES = %W{build vendor composer.lock svn}
-  VENDORED_BUGSNAG_PHP = "vendor/bugsnag/bugsnag/src/Bugsnag"
+  PLUGIN_NAME = 'bugsnag'
+  PLUGIN_FILES = %w[bugsnag.php readme.txt views LICENSE.txt]
+  BUILD_FILES = %w[build vendor composer.lock svn]
   VERSION_REGEX = /^\d+\.\d+\.\d+$/
 
-  desc "build", "create a clean build of the plugin"
-  def build(build_dir="build")
-    bugsnag_php_dir = File.join(build_dir, 'bugsnag-php')
+  desc 'build', 'create a clean build of the plugin'
+  def build(build_dir = 'build')
+    vendor_dir = File.join(build_dir, 'vendor')
 
     # Prepare the build directory
-    FileUtils.mkdir_p bugsnag_php_dir
+    FileUtils.mkdir_p vendor_dir
 
     # Install dependencies
-    puts "- Installing dependencies"
-    `composer install`
+    puts '- Installing dependencies'
+    `composer install --no-dev --optimize-autoloader`
 
     # Copy plugin files to the build directory
-    puts "- Copying plugin files"
+    puts '- Copying plugin files'
     FileUtils.cp_r PLUGIN_FILES, build_dir
 
     # Copy vendored bugsnag to the build directory
-    puts "- Copying vendored bugsnag-php"
-    `cp -r #{VENDORED_BUGSNAG_PHP}/* #{bugsnag_php_dir}`
+    puts '- Copying vendor'
+    `cp -r vendor/* #{vendor_dir}`
   end
 
-  desc "update_version <version>", "update the plugin to the given version"
+  desc 'update_version <version>', 'update the plugin to the given version'
   def update_version(version)
-    return $stderr.puts "Invalid version number #{version}" unless version =~ VERSION_REGEX
+    return warn "Invalid version number #{version}" unless version =~ VERSION_REGEX
 
-    replace_in_file("readme.txt", /Stable tag: \d\.\d\.\d/, "Stable tag: #{version}")
-    replace_in_file("bugsnag.php", /Version: \d\.\d\.\d/, "Version: #{version}")
-    replace_in_file("bugsnag.php", /'version' => '\d\.\d\.\d'/, "'version' => '#{version}'")
+    replace_in_file('readme.txt', /Stable tag: \d\.\d\.\d/, "Stable tag: #{version}")
+    replace_in_file('bugsnag.php', /Version: \d\.\d\.\d/, "Version: #{version}")
+    replace_in_file('bugsnag.php', /'version' => '\d\.\d\.\d'/, "'version' => '#{version}'")
   end
 
-  desc "release_svn <version> <wordpress-username>", "perform a release to svn"
+  desc 'release_svn <version> <wordpress-username>', 'perform a release to svn'
   def release_svn(version, username)
     # Checkout a fresh copy of the svn repo
     checkout_svn(username)
 
     # Build a release copy into svn/trunk
-    build "svn/trunk"
+    build 'svn/trunk'
 
     # Move into the svn repo
-    Dir.chdir "svn" do
+    Dir.chdir 'svn' do
       # Commit changes to svn
       `svn add trunk/*`
       `svn ci -m "Release version #{version}" --username #{username}`
@@ -56,10 +55,10 @@ class Wordpress < Thor
     end
 
     # Remove temporary files
-    FileUtils.rm_rf "svn"
+    FileUtils.rm_rf 'svn'
   end
 
-  desc "release_git <version>", "perform a release to git"
+  desc 'release_git <version>', 'perform a release to git'
   def release_git(version)
     # Commit version changes
     `git add readme.txt bugsnag.php`
@@ -72,7 +71,7 @@ class Wordpress < Thor
     `git push origin master && git push --tags`
   end
 
-  desc "release <version> <wordpress-username>", "perform a release to git and svn"
+  desc 'release <version> <wordpress-username>', 'perform a release to git and svn'
   def release(version, wordpress_username)
     # Update version number
     update_version(version)
@@ -84,8 +83,8 @@ class Wordpress < Thor
     release_svn(version, wordpress_username)
   end
 
-  desc "zip <zip-name>", "create a zip of the plugin"
-  def zip(zip_name="bugsnag-wordpress.zip", build_dir="build")
+  desc 'zip <zip-name>', 'create a zip of the plugin'
+  def zip(zip_name = 'bugsnag-wordpress.zip', build_dir = 'build')
     # Build a clean plugin
     build File.join(build_dir, PLUGIN_NAME)
 
@@ -93,26 +92,27 @@ class Wordpress < Thor
     puts "- Generating #{zip_name}"
     Dir.chdir build_dir do
       `zip -r #{zip_name} #{PLUGIN_NAME}`
-      FileUtils.cp zip_name, "../"
+      FileUtils.cp zip_name, '../'
     end
 
     # Remove temporary files
     FileUtils.rm_rf build_dir
   end
 
-  desc "clean", "clean up any build files"
-  def clean()
+  desc 'clean', 'clean up any build files'
+  def clean
     FileUtils.rm_rf BUILD_FILES
   end
 
-  desc "checkout_svn <wordpress-username>", "checkout a copy of the svn repo"
+  desc 'checkout_svn <wordpress-username>', 'checkout a copy of the svn repo'
   def checkout_svn(username)
     `svn co http://plugins.svn.wordpress.org/bugsnag svn --username #{username}`
   end
 
   private
+
   def replace_in_file(filename, find, replace)
     str = File.read(filename)
-    File.open(filename, 'w') {|f| f.write(str.gsub(find, replace)) }
+    File.open(filename, 'w') { |f| f.write(str.gsub(find, replace)) }
   end
 end

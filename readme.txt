@@ -2,8 +2,8 @@
 Contributors: loopj
 Tags: bugsnag, error, monitoring, exception, logging
 Requires at least: 2.0
-Tested up to: 6.8.2
-Stable tag: 1.6.5
+Tested up to: 6.9
+Stable tag: 2.0.0
 License: GPLv2 or later
 
 Automatically detects errors & crashes on your WordPress site using BugSnag to notify you by email, chat or issues system.
@@ -36,6 +36,11 @@ To manually install Bugsnag:
 
 
 == Changelog ==
+
+= 2.0.0 =
+* BREAKING: Updated `bugsnag-php` dependency to v3. More details can be found at https://github.com/bugsnag/bugsnag-php/blob/master/UPGRADING.md
+* Added extended notifier configuration options.
+* Update plugin metadata.
 
 = 1.6.5 =
 * Update plugin metadata
