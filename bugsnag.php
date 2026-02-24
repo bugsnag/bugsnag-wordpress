@@ -72,7 +72,8 @@ class Bugsnag_Wordpress
             // Regular
             $this->apiKey = get_option('bugsnag_api_key');
             $this->notifySeverities = get_option('bugsnag_notify_severities');
-            $this->redactedKeys = get_option('bugsnag_redacted_keys');
+            $redactedKeysValue = get_option('bugsnag_redacted_keys');
+            $this->redactedKeys = $redactedKeysValue ? $redactedKeysValue : get_option('bugsnag_filterfields'); // Backwards compatibility
             $this->appVersion = get_option('bugsnag_app_version');
             $this->notifyEndpoint = get_option('bugsnag_notify_endpoint');
             $this->releaseStageConfig = get_option('bugsnag_release_stage');
@@ -80,7 +81,8 @@ class Bugsnag_Wordpress
             // Multisite
             $this->apiKey = get_site_option('bugsnag_api_key');
             $this->notifySeverities = get_site_option('bugsnag_notify_severities');
-            $this->redactedKeys = get_site_option('bugsnag_redacted_keys');
+            $redactedKeysValue = get_site_option('bugsnag_redacted_keys');
+            $this->redactedKeys = $redactedKeysValue ? $redactedKeysValue : get_site_option('bugsnag_filterfields'); // Backwards compatibility
             $this->appVersion = get_site_option('bugsnag_app_version');
             $this->notifyEndpoint = get_site_option('bugsnag_notify_endpoint');
             $this->releaseStageConfig = get_site_option('bugsnag_release_stage');
@@ -97,8 +99,7 @@ class Bugsnag_Wordpress
 
             $this->client->setReleaseStage($this->releaseStage())
                 ->setErrorReportingLevel($this->errorReportingLevel())
-                ->setRedactedKeys($this->redactedKeys())
-                ->setAppType('wordpress');
+                ->setRedactedKeys($this->redactedKeys());
 
             // Set app version if configured
             if (!empty($this->appVersion)) {
@@ -313,6 +314,7 @@ class Bugsnag_Wordpress
         $this->notifyEndpoint = $_POST['bugsnag_notify_endpoint'];
         $this->releaseStageConfig = $_POST['bugsnag_release_stage'];
 
+        $this->constructBugsnag();
         $this->client->notifyError(
             'BugsnagTest',
             'Testing bugsnag',
