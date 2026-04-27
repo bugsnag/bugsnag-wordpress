@@ -1,6 +1,11 @@
 Changelog
 =========
 
+## v2.0.0 (2026-01-23)
+
+* BREAKING: Updated `bugsnag-php` dependency to v3. More details can be found at [UPGRADING.md](https://github.com/bugsnag/bugsnag-php/blob/master/UPGRADING.md)
+* Added extended notifier configuration options. [#71](https://github.com/bugsnag/bugsnag-wordpress/pull/71)
+
 ## v1.6.5 (2025-09-30)
 
 * Update plugin metadata [#66](https://github.com/bugsnag/bugsnag-wordpress/pull/67)

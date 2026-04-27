@@ -9,22 +9,34 @@ Author URI: https://bugsnag.com
 License: GPLv2 or later
 */
 
+use Bugsnag\Client;
+use Bugsnag\Handler;
+use Bugsnag\ErrorTypes;
+use Bugsnag\Report;
+
 class Bugsnag_Wordpress
 {
     private static $COMPOSER_AUTOLOADER = 'vendor/autoload.php';
-    private static $PACKAGED_AUTOLOADER = 'bugsnag-php/Autoload.php';
     private static $DEFAULT_NOTIFY_SEVERITIES = 'fatal,error';
+
+    private static $DISABLED_NOTIFIER_METHODS = array(
+        'setAutoCaptureSessions',
+        'shouldCaptureSessions'
+    );
 
     private static $NOTIFIER = array(
         'name' => 'Bugsnag Wordpress (Official)',
-        'version' => '1.6.5',
+        'version' => '2.0.0',
         'url' => 'https://github.com/bugsnag/bugsnag-wordpress',
     );
 
-    private $client;
+    private Client $client;
     private $apiKey;
     private $notifySeverities;
-    private $filterFields;
+    private $redactedKeys;
+    private $appVersion;
+    private $notifyEndpoint;
+    private $releaseStageConfig;
     private $pluginBase;
 
     public function __construct()
@@ -35,7 +47,7 @@ class Bugsnag_Wordpress
         $this->pluginBase = 'bugsnag/bugsnag.php';
 
         // Run init actions (loading wp user)
-        add_action('init', array($this, 'initActions'));
+        add_action('init', array($this, 'registerUser'));
 
         // Load admin actions (admin links and pages)
         add_action('admin_menu', array($this, 'adminMenuActions'));
@@ -60,12 +72,20 @@ class Bugsnag_Wordpress
             // Regular
             $this->apiKey = get_option('bugsnag_api_key');
             $this->notifySeverities = get_option('bugsnag_notify_severities');
-            $this->filterFields = get_option('bugsnag_filterfields');
+            $redactedKeysValue = get_option('bugsnag_redacted_keys');
+            $this->redactedKeys = $redactedKeysValue ? $redactedKeysValue : get_option('bugsnag_filterfields'); // Backwards compatibility
+            $this->appVersion = get_option('bugsnag_app_version');
+            $this->notifyEndpoint = get_option('bugsnag_notify_endpoint');
+            $this->releaseStageConfig = get_option('bugsnag_release_stage');
         } else {
             // Multisite
             $this->apiKey = get_site_option('bugsnag_api_key');
             $this->notifySeverities = get_site_option('bugsnag_notify_severities');
-            $this->filterFields = get_site_option('bugsnag_filterfields');
+            $redactedKeysValue = get_site_option('bugsnag_redacted_keys');
+            $this->redactedKeys = $redactedKeysValue ? $redactedKeysValue : get_site_option('bugsnag_filterfields'); // Backwards compatibility
+            $this->appVersion = get_site_option('bugsnag_app_version');
+            $this->notifyEndpoint = get_site_option('bugsnag_notify_endpoint');
+            $this->releaseStageConfig = get_site_option('bugsnag_release_stage');
         }
 
         $this->constructBugsnag();
@@ -75,13 +95,23 @@ class Bugsnag_Wordpress
     {
         // Activate the bugsnag client
         if (!empty($this->apiKey)) {
-            $this->client = new Bugsnag_Client($this->apiKey);
+            $this->client = Client::make($this->apiKey);
 
             $this->client->setReleaseStage($this->releaseStage())
-                         ->setErrorReportingLevel($this->errorReportingLevel())
-                         ->setFilters($this->filterFields());
+                ->setErrorReportingLevel($this->errorReportingLevel())
+                ->setRedactedKeys($this->redactedKeys());
 
-            $this->client->mergeDeviceData(['runtimeVersions' => ['wordpress' => get_bloginfo('version')]]);
+            // Set app version if configured
+            if (!empty($this->appVersion)) {
+                $this->client->setAppVersion($this->appVersion);
+            }
+
+            // Set notify endpoint if configured
+            if (!empty($this->notifyEndpoint)) {
+                $this->client->setNotifyEndpoint($this->notifyEndpoint);
+            }
+
+            $this->client->getConfig()->mergeDeviceData(['runtimeVersions' => ['wordpress' => get_bloginfo('version')]]);
 
             $this->client->setNotifier(self::$NOTIFIER);
 
@@ -96,8 +126,7 @@ class Bugsnag_Wordpress
 
             if ($set_error_and_exception_handlers === true) {
                 // Hook up automatic error handling
-                set_error_handler(array($this->client, 'errorHandler'));
-                set_exception_handler(array($this->client, 'exceptionHandler'));
+                Handler::register($this->client);
             }
         }
     }
@@ -105,34 +134,22 @@ class Bugsnag_Wordpress
     private function requireBugsnagPhp()
     {
         // Bugsnag-php was already loaded by some 3rd-party code, don't need to load it again.
-        if (class_exists('Bugsnag_Client')) {
+        if (class_exists('Bugsnag\Client')) {
             return true;
         }
 
         // Try loading bugsnag-php with composer autoloader.
-        $composer_autoloader_path = $this->relativePath(self::$COMPOSER_AUTOLOADER);
-        $composer_autoloader_path_filtered = apply_filters('bugsnag_composer_autoloader_path', $composer_autoloader_path);
-        if (file_exists($composer_autoloader_path_filtered)) {
-            require_once $composer_autoloader_path_filtered;
-
+        try {
+            require_once $this->relativePath(self::$COMPOSER_AUTOLOADER);
             return true;
+        } catch (Exception $e) {
+            return false;
         }
-
-        // Try loading bugsnag-php from packaged autoloader.
-        $packaged_autoloader_path = $this->relativePath(self::$PACKAGED_AUTOLOADER);
-        $packaged_autoloader_path_filtered = apply_filters('bugsnag_packaged_autoloader_path', $packaged_autoloader_path);
-        if (file_exists($packaged_autoloader_path_filtered)) {
-            require_once $packaged_autoloader_path_filtered;
-
-            return true;
-        }
-
-        return false;
     }
 
     private function relativePath($path)
     {
-        return dirname(__FILE__).'/'.$path;
+        return dirname(__FILE__) . '/' . $path;
     }
 
     private function errorReportingLevel()
@@ -142,22 +159,22 @@ class Bugsnag_Wordpress
 
         $severities = explode(',', $notifySeverities);
         foreach ($severities as $severity) {
-            $level |= Bugsnag_ErrorTypes::getLevelsForSeverity($severity);
+            $level |= ErrorTypes::getLevelsForSeverity($severity);
         }
 
         return $level;
     }
 
-    private function filterFields()
+    private function redactedKeys()
     {
-        $filter_fields = apply_filters('bugsnag_filter_fields', $this->filterFields);
+        $redacted_keys = apply_filters('bugsnag_redacted_keys', $this->redactedKeys);
 
         // Array with empty string will break things.
-        if ($filter_fields === '') {
+        if ($redacted_keys === '') {
             return array();
         }
 
-        return array_map('trim', explode("\n", $filter_fields));
+        return array_map('trim', explode("\n", $redacted_keys));
     }
 
     /**
@@ -167,7 +184,10 @@ class Bugsnag_Wordpress
      */
     private function releaseStage()
     {
-        if (function_exists('wp_get_environment_type')) {
+        // Use configured release stage if available
+        if (!empty($this->releaseStageConfig)) {
+            $release_stage = $this->releaseStageConfig;
+        } elseif (function_exists('wp_get_environment_type')) {
             $release_stage = wp_get_environment_type(); // Defaults to production when not set.
         } else {
             $release_stage = defined('WP_ENV') ? WP_ENV : 'production';
@@ -178,35 +198,31 @@ class Bugsnag_Wordpress
     }
 
     // Action hooks
-    public function initActions()
+    public function registerUser()
     {
-        // This should be handled on stage of initializing,
-        // not even adding action if init failed.
-        //
-        // Leaving it here for now.
-        if (empty($this->client)) {
+        if (!$this->isStarted()) { // This might attempt to run before the client is configured.
             return;
         }
+        $this->client->registerCallback(function (Report $report) {
+            // Set the bugsnag user using the current WordPress user if available,
+            // set as anonymous otherwise.
+            $user = [];
 
-        // Set the bugsnag user using the current WordPress user if available,
-        // set as anonymous otherwise.
-        $user = array();
-        if (is_user_logged_in()) {
-            $wp_user = wp_get_current_user();
+            if (is_user_logged_in()) {
+                $wp_user = wp_get_current_user();
+                $user['id'] = $wp_user->user_login;
+                $user['email'] = $wp_user->user_email;
+                $user['name'] = $wp_user->display_name;
+            } else {
+                $use_unsafe_spoofable_ip_address_getter = apply_filters('bugsnag_use_unsafe_spoofable_ip_address_getter', true);
+                $user['id'] = $use_unsafe_spoofable_ip_address_getter ?
+                    $this->getClientIpAddressUnsafe() :
+                    $this->getClientIpAddress();
+                $user['name'] = 'anonymous';
+            }
 
-            // Removed checks for !empty($wp_user->display_name), it should not be required.
-            $user['id'] = $wp_user->user_login;
-            $user['email'] = $wp_user->user_email;
-            $user['name'] = $wp_user->display_name;
-        } else {
-            $use_unsafe_spoofable_ip_address_getter = apply_filters('bugsnag_use_unsafe_spoofable_ip_address_getter', true);
-            $user['id'] = $use_unsafe_spoofable_ip_address_getter ?
-                $this->getClientIpAddressUnsafe() :
-                $this->getClientIpAddress();
-            $user['name'] = 'anonymous';
-        }
-
-        $this->client->setUser($user);
+            $report->setUser($user);
+        });
     }
 
     // Unsafe: client can spoof address.
@@ -250,18 +266,24 @@ class Bugsnag_Wordpress
         }
     }
 
-    private function updateNetworkSettings($settings)
+    private function updateNetworkSettings()
     {
         // Update options
         update_site_option('bugsnag_api_key', isset($_POST['bugsnag_api_key']) ? $_POST['bugsnag_api_key'] : '');
         update_site_option('bugsnag_notify_severities', isset($_POST['bugsnag_notify_severities']) ? $_POST['bugsnag_notify_severities'] : '');
-        update_site_option('bugsnag_filterfields', isset($_POST['bugsnag_filterfields']) ? $_POST['bugsnag_filterfields'] : '');
+        update_site_option('bugsnag_redacted_keys', isset($_POST['bugsnag_redacted_keys']) ? $_POST['bugsnag_redacted_keys'] : '');
+        update_site_option('bugsnag_app_version', isset($_POST['bugsnag_app_version']) ? $_POST['bugsnag_app_version'] : '');
+        update_site_option('bugsnag_notify_endpoint', isset($_POST['bugsnag_notify_endpoint']) ? $_POST['bugsnag_notify_endpoint'] : '');
+        update_site_option('bugsnag_release_stage', isset($_POST['bugsnag_release_stage']) ? $_POST['bugsnag_release_stage'] : '');
         update_site_option('bugsnag_network', true);
 
         // Update variables
         $this->apiKey = get_site_option('bugsnag_api_key');
         $this->notifySeverities = get_site_option('bugsnag_notify_severities');
-        $this->filterFields = get_site_option('bugsnag_filterfields');
+        $this->redactedKeys = get_site_option('bugsnag_redacted_keys');
+        $this->appVersion = get_site_option('bugsnag_app_version');
+        $this->notifyEndpoint = get_site_option('bugsnag_notify_endpoint');
+        $this->releaseStageConfig = get_site_option('bugsnag_release_stage');
 
         echo '<div class="updated"><p>Settings saved.</p></div>';
     }
@@ -287,16 +309,22 @@ class Bugsnag_Wordpress
 
         $this->apiKey = $_POST['bugsnag_api_key'];
         $this->notifySeverities = $_POST['bugsnag_notify_severities'];
-        $this->filterFields = $_POST['bugsnag_filterfields'];
+        $this->redactedKeys = $_POST['bugsnag_redacted_keys'];
+        $this->appVersion = $_POST['bugsnag_app_version'];
+        $this->notifyEndpoint = $_POST['bugsnag_notify_endpoint'];
+        $this->releaseStageConfig = $_POST['bugsnag_release_stage'];
 
         $this->constructBugsnag();
         $this->client->notifyError(
             'BugsnagTest',
             'Testing bugsnag',
-            array(
-                'notifier' => self::$NOTIFIER,
-                'docs' => array('url' => 'https://docs.bugsnag.com/platforms/php/wordpress/'),
-            )
+            function (Report $report) {
+                $report->setSeverity('info');
+                $report->setMetaData([
+                    'notifier' => self::$NOTIFIER,
+                    'docs' => array('url' => 'https://docs.bugsnag.com/platforms/php/wordpress/'),
+                ]);
+            }
         );
 
         die();
@@ -314,6 +342,11 @@ class Bugsnag_Wordpress
         }
 
         include $this->relativePath('views/settings.php');
+    }
+
+    public function isStarted()
+    {
+        return isset($this->apiKey) && isset($this->client);
     }
 
     private function renderOption($name, $value, $current)
@@ -342,11 +375,15 @@ class Bugsnag_Wordpress
             );
         }
 
+        if (in_array($method, self::$DISABLED_NOTIFIER_METHODS)) {
+            throw new BadMethodCallException(sprintf('Method %s is disabled in BugSnag for Wordpress', $method));
+        }
+
         if (method_exists($this->client, $method)) {
             return call_user_func_array(array($this->client, $method), $arguments);
         }
 
-        throw new BadMethodCallException(sprintf('Method %s does not exist on %s or Bugsnag_Client', $method, __CLASS__));
+        throw new BadMethodCallException(sprintf('Method %s does not exist on %s or Bugsnag\Client', $method, __CLASS__));
     }
 }
 

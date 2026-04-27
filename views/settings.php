@@ -46,7 +46,7 @@
 
                 <tr valign="top">
                     <th>
-                      <label for="bugsnag_notify_severities">Notify BugSnag About</label>
+                        <label for="bugsnag_notify_severities">Notify BugSnag About</label>
                     </th>
                     <td>
                         <select name="bugsnag_notify_severities" id="bugsnag_notify_severities">
@@ -57,16 +57,55 @@
                     </td>
                 </tr>
 
-                <!-- Filter Fields -->
+                <!-- Redacted Keys -->
                 <tr valign="top">
                     <th>
-                      <label for="bugsnag_filterfields">BugSnag Field Filter</label>
+                        <label for="bugsnag_redacted_keys">BugSnag Redacted Keys</label>
                     </th>
                     <td>
-                        <textarea id="bugsnag_filterfields" name="bugsnag_filterfields" class="regular-text filterfields"  style="height: 150px;"><?php echo $this->filterFields; ?></textarea>
+                        <textarea id="bugsnag_redacted_keys" name="bugsnag_redacted_keys" class="regular-text redacted_keys" style="height: 150px;"><?php echo $this->redactedKeys; ?></textarea>
                         <p class="description">
                             The information to remove from BugSnag reports, one per line.
                             Use this if you want to ensure you don't send sensitive data such as passwords, and credit card numbers to our servers.
+                        </p>
+                    </td>
+                </tr>
+
+                <!-- App Version -->
+                <tr valign="top">
+                    <th scope="row">
+                        <label for="bugsnag_app_version">App Version</label>
+                    </th>
+                    <td>
+                        <input type="text" id="bugsnag_app_version" name="bugsnag_app_version" value="<?php echo $this->appVersion; ?>" class="regular-text" />
+                        <p class="description">
+                            Set the version of your application. This will be used to group errors by release.
+                        </p>
+                    </td>
+                </tr>
+
+                <!-- Notify Endpoint -->
+                <tr valign="top">
+                    <th scope="row">
+                        <label for="bugsnag_notify_endpoint">Notify Endpoint</label>
+                    </th>
+                    <td>
+                        <input type="text" id="bugsnag_notify_endpoint" name="bugsnag_notify_endpoint" value="<?php echo $this->notifyEndpoint; ?>" class="regular-text code" placeholder="https://notify.bugsnag.com" />
+                        <p class="description">
+                            Custom endpoint URL for error notifications. Leave blank to use the default BugSnag endpoint.
+                        </p>
+                    </td>
+                </tr>
+
+                <!-- Release Stage -->
+                <tr valign="top">
+                    <th scope="row">
+                        <label for="bugsnag_release_stage">Release Stage</label>
+                    </th>
+                    <td>
+                        <input type="text" id="bugsnag_release_stage" name="bugsnag_release_stage" value="<?php echo $this->releaseStageConfig; ?>" class="regular-text" placeholder="production" />
+                        <p class="description">
+                            The release stage (e.g., production, staging, development). Leave blank to auto-detect from WordPress environment.
                         </p>
                     </td>
                 </tr>
@@ -80,7 +119,7 @@
         <!-- Common form stuff -->
         <?php wp_nonce_field('update-options'); ?>
         <input type="hidden" name="action" value="update" />
-        <input type="hidden" name="page_options" value="bugsnag_api_key,bugsnag_notify_severities,bugsnag_filterfields" />
+        <input type="hidden" name="page_options" value="bugsnag_api_key,bugsnag_notify_severities,bugsnag_redacted_keys,bugsnag_app_version,bugsnag_notify_endpoint,bugsnag_release_stage" />
     </form>
 </div>
 
@@ -98,24 +137,27 @@
     </div>
 <?php } ?>
 
-<script type="text/javascript" >
-jQuery(document).ready(function($) {
-    $('#bugsnag-test').click(function (e) {
-        e.stopPropagation();
-        e.preventDefault();
+<script type="text/javascript">
+    jQuery(document).ready(function($) {
+        $('#bugsnag-test').click(function(e) {
+            e.stopPropagation();
+            e.preventDefault();
 
-        var data = {
-            action: 'test_bugsnag',
-            bugsnag_api_key: $('#bugsnag_api_key').val(),
-            bugsnag_notify_severities: $('#bugsnag_notify_severities').val(),
-            bugsnag_filterfields: $('#bugsnag_filterfields').val(),
-            _wpnonce: '<?php echo wp_create_nonce('test_bugsnag_nonce'); ?>'
-        };
+            var data = {
+                action: 'test_bugsnag',
+                bugsnag_api_key: $('#bugsnag_api_key').val(),
+                bugsnag_notify_severities: $('#bugsnag_notify_severities').val(),
+                bugsnag_redacted_keys: $('#bugsnag_redacted_keys').val(),
+                bugsnag_app_version: $('#bugsnag_app_version').val(),
+                bugsnag_notify_endpoint: $('#bugsnag_notify_endpoint').val(),
+                bugsnag_release_stage: $('#bugsnag_release_stage').val(),
+                _wpnonce: '<?php echo wp_create_nonce('test_bugsnag_nonce'); ?>'
+            };
 
-        // since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
-        $.post(ajaxurl, data, function(response) {
-            alert('Sent notification. Visit https://app.bugsnag.com/ to see it in your dashboard');
+            // since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
+            $.post(ajaxurl, data, function(response) {
+                alert('Sent notification. Visit https://app.bugsnag.com/ to see it in your dashboard');
+            });
         });
     });
-});
 </script>
