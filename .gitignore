@@ -3,3 +3,8 @@ vendor
 composer.lock
 svn
 decisions.yml
+.gitleaks.toml
+.pre-commit-config.yaml
+.gitleaks-baseline.json
+*.log
+*.zip
